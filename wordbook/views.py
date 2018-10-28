@@ -7,7 +7,7 @@ from .forms import WordAddForm
 from .models import Word, Wordbook
 
 
-class HomeView(LoginRequiredMixin, generic.ListView):
+class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         word_data = Word.objects.filter(wordbook__user=request.user)
         context = {
