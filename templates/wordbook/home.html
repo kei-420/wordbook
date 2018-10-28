@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+ <div align="center">
+    <h2>Welcome, 「{{ user }}」</h2>
+</div>
+<body>
+    <h3 align="center">{{ user }}'s 単語帳</h3>
+    <table border="3" class="container">
+       <tr align="center">
+           <th>単語</th>
+           <th>品詞</th>
+           <th>意味</th>
+       </tr>
+    {% for data in show_data %}
+        <tr align="center">
+           <td>{{ data.vocab }}</td>
+            <td>{{ data.vocab_class }}</td>
+            <td>{{ data.vocab_meaning }}</td>
+{#			<a href="{% url 'blog_app:post_detail' post.pk %}">続きを読む</a>#}
+		</tr>
+    {% endfor %}
+    </table>
+</body>
+    <div align="center">
+        <a class="btn btn-primary" href="{% url 'wordbook:add_word' %}">単語追加</a>
+        <a class="btn btn-primary" href="{% url 'accounts:logout' %}">Logout</a>
+     </div>
+{% endblock %}

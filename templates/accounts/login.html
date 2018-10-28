@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="" method="post" class="ui form">{% csrf_token %}
+        <form action="" method="get" class="ui form">
+    {% for field in form %}
+
+        <div class="ui input{% if field.errors %} error{% endif %}" align="center">
+            {{ field }}
+        {% if field.errors %}
+        <p>{{ field.errors.0 }}</p>
+
+        {% endif %}
+    {% endfor %}
+        </div>
+        <div align="center">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+        </form>
+        <p>New to Blog? <a href="{% url 'accounts:signup' %}">Signup now!</a></p>
+    </form>
+{% endblock %}
