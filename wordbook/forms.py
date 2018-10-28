@@ -8,8 +8,8 @@ class WordAddForm(forms.ModelForm):
         fields = ('adding_word', )
 
     def __init__(self, *args, **kwargs):
-        self._user = kwargs.pop('user')
         super(WordAddForm, self).__init__(*args, **kwargs)
+        self._user = kwargs.pop('user')
         self.fields['adding_word'].widget.attrs = {'placeholder': '追加単語'}
 
     def clean_adding_word(self):
