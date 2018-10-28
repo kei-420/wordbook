@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View, generic
 
 from .forms import WordAddForm
 
-from .models import Word, Wordbook
+from .models import Word
 
 
 class HomeView(LoginRequiredMixin, View):
