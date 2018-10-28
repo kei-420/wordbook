@@ -9,7 +9,7 @@ from .models import Word
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        word_data = Word.objects.filter(wordbook__user=request.user)
+        word_data = Word.objects.filter(wordbook__user=request.user).order_by('vocab')
         context = {
             'show_data': word_data,
         }
