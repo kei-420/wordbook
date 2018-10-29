@@ -44,7 +44,7 @@ class WordAddView(LoginRequiredMixin, generic.FormView):
 
 class RepeatedGameView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        global is_game_word, is_answer, are_elements
+        global is_game_word, is_answer
         user_word_data = Wordbook.objects.filter(user=request.user)
         is_randomly_selected = np.random.choice(
             list(user_word_data.values('word__vocab', 'word__vocab_meaning')),
@@ -52,14 +52,14 @@ class RepeatedGameView(LoginRequiredMixin, View):
             replace=False,
         )
         for j in is_randomly_selected:
-            is_game_word = j["word__vocab"]
-            is_answer = j["word__vocab_meaning"]
+            is_game_word = j['word__vocab']
+            is_answer = j['word__vocab_meaning']
 
         choices = Word.objects.exclude(vocab_meaning=is_answer).values('vocab_meaning')
         random_choices = np.random.choice(list(choices), 3, replace=False)
         list_random_choices = []
         for n in range(0, 3):
-            are_elements = random_choices[n]["vocab_meaning"]
+            are_elements = random_choices[n]['vocab_meaning']
             list_random_choices.append(are_elements)
         list_random_choices.append(is_answer)
         random.shuffle(list_random_choices)
