@@ -60,7 +60,7 @@ class RepeatedGameView(LoginRequiredMixin, View):
             # 答えである意味
             is_answer = j['word__vocab_meaning']
 
-        # ４つの選択肢のうち、答え以外の３つの取得
+        # ４つの選択肢のうち、答え以外の３つの取得かつ、その３つが答えと重複しないようにした。
         choices = Word.objects.exclude(vocab_meaning=is_answer).values('vocab_meaning')
         # リストからランダム抽出。重複なし。
         random_choices = np.random.choice(list(choices), 3, replace=False)
