@@ -44,7 +44,7 @@ class WordAddView(LoginRequiredMixin, generic.FormView):
 
 class RepeatedGameView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        global is_game_word, is_answer
+        global is_game_word, is_answer, are_elements
         user_word_data = Wordbook.objects.filter(user=request.user)
         is_randomly_selected = np.random.choice(
             list(user_word_data.values('word__vocab', 'word__vocab_meaning')),
@@ -57,25 +57,22 @@ class RepeatedGameView(LoginRequiredMixin, View):
 
         choices = Word.objects.exclude(vocab_meaning=is_answer).values('vocab_meaning')
         random_choices = np.random.choice(list(choices), 3, replace=False)
+        list_random_choices = []
         for n in range(0, 3):
             are_elements = random_choices[n]["vocab_meaning"]
-            list_choices = [is_answer, are_elements]
-            random.shuffle(list_choices)
-            choice1 = list_choices[0]
-            choice2 = list_choices[1]
-            choice3 = list_choices[2]
-            choice4 = list_choices[3]
+            list_random_choices.append(are_elements)
+        list_random_choices.append(is_answer)
+        random.shuffle(list_random_choices)
+        choice1 = list_random_choices[0]
+        choice2 = list_random_choices[1]
+        choice3 = list_random_choices[2]
+        choice4 = list_random_choices[3]
 
-        # random_choice_1 = random_choices[0]["vocab_meaning"]
-        # random_choice_2 = random_choices[1]["vocab_meaning"]
-        # random_choice_3 = random_choices[2]["vocab_meaning"]
-        # for ran in random_choices:
-        #     are_choices = ran["vocab_meaning"]
-            context = {
-                'is_game_word': is_game_word,
-                'choice1': choice1,
-                'choice2': choice2,
-                'choice3': choice3,
-                'choice4': choice4,
-            }
-            return render(request, 'wordbook/repeated_game.html', context)
+        context = {
+            'is_game_word': is_game_word,
+            'choice1': choice1,
+            'choice2': choice2,
+            'choice3': choice3,
+            'choice4': choice4,
+        }
+        return render(request, 'wordbook/repeated_game.html', context)
