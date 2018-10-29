@@ -15,7 +15,8 @@ class WordAddForm(forms.ModelForm):
     def clean_adding_word(self):
         adding_word = self.cleaned_data['adding_word']
         if not Word.objects.filter(vocab=adding_word):
-            raise forms.ValidationError('入力された単語は存在しません。')
+            raise forms.ValidationError('入力された単語は存在しません。\n'
+                                        'スペル等を確認して下さい。')
         if Wordbook.objects.filter(adding_word=adding_word, user_id=self._user).exists():
             raise forms.ValidationError('入力された単語は既に単語帳内に存在しています。')
         return adding_word
@@ -29,5 +30,3 @@ class WordAddForm(forms.ModelForm):
         if commit:
             word_info.save()
         return word_info
-
-

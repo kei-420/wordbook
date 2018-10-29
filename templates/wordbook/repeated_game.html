@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 align="center">-Repeated Game-</h1>
+    <body topmargin="40" rightmargin="50" leftmargin="50" bottommargin="30">
+<form action="" method="get">
+    <table align="center">
+{#        {% for  %}#}
+            <tr align="center">
+            <td>
+                <h2>{{ is_game_word }}</h2>
+            </td>
+{#            <td>{{ word_data }}</td>#}
+{#        {% endfor %}#}
+            </tr>
+    </table>
+    <form action="cgi-bin/formmail.cgi" method="post">{% csrf_token %}
+        <div class="block" align="left">
+        <label><input type="radio" name="blood" value="a">{{ choice1 }}</label>
+        </div>
+         <div class="block" align="right">
+        <label><input type="radio" name="blood" value="a">{{ choice2 }}</label>
+        </div>
+         <div class="block" align="left">
+        <label><input type="radio" name="blood" value="a">{{ choice3 }}</label>
+        </div>
+         <div class="block" align="right">
+        <label><input type="radio" name="blood" value="a">{{ choice4 }}</label>
+        </div>
+        <button class="btn btn-primary" type="submit">決定</button>
+    </form>
+</form>
+    <a class="btn btn-primary" href="{% url 'wordbook:home' %}">戻る</a>
+    </body>
+{% endblock %}
+
+
+
+
+
+
+

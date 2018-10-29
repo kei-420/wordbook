@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.models import UserManager
+from simple_history.models import HistoricalRecords
+import numpy as np
 
 
 class Word(models.Model):
@@ -51,4 +53,34 @@ class Wordbook(models.Model):
 
     def __str__(self):
         return str(self.adding_word)
+
+
+class RepeatedGame(models.Model):
+    class Meta:
+        db_table = 'repeated_game'
+
+    user = models.ForeignKey(
+        Wordbook,
+        on_delete=models.PROTECT,
+    )
+    trials = models.PositiveIntegerField(
+        default=0,
+    )
+
+    def __str__(self):
+        return self.user
+
+
+# class WordForGame(models.Model):
+
+
+# class History(models.Model):
+#     class Meta:
+#         db_table = 'history'
+#
+#     user = models.ForeignKey(
+#         UserManager,
+#         on_delete=models.PROTECT,
+#     )
+#     history = HistoricalRecords()
 
