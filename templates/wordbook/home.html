@@ -17,7 +17,7 @@
         <tr align="center">
            <td>{{ data.vocab }}</td>
             <td>{{ data.vocab_class }}</td>
-            <td>{{ data2 }}</td>
+            <td>{{ data2.vocab_meaning }}</td>
 {#            <td><a class="btn btn-primary" href="{% url 'wordbook:delete_word' data.pk %}">削除</a></td>#}
 {#            <form action="{% url 'wordbook:delete_word' data.pk %}" method="post">{% csrf_token %}#}
            <form method="post">{% csrf_token %}

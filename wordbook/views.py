@@ -35,24 +35,24 @@ class HomeView(LoginRequiredMixin, generic.ListView):
     def get(self, request, *args, **kwargs):
         get_word_and_its_class = Word.objects.filter(wordbook__user=1).values('vocab')
         get_words = get_word_and_its_class.values('vocab')
-        words_list = []
-        for entry in get_words:
-            each_word = entry['vocab']
-            words_list.append(each_word)
+        # words_list = []
+        # for entry in get_words:
+        #     each_word = entry['vocab']
+        #     words_list.append(each_word)
 
         get_wordids = get_word_and_its_class.values('wordid')
-        meanings_list = []
+        # meanings_list = []
         for entry in get_wordids:
             get_meanings = WordMeanings.objects.filter(wordid=entry['wordid'], lang='jpn').values('vocab_meaning')
-            for entry2 in get_meanings:
-                each_meaning = entry2['vocab_meaning']
-                meanings_list.append(each_meaning)
-        dictionary = dict(zip(words_list, meanings_list))
-        context = {
-            'show_word': get_word_and_its_class,
-            'show_meaning': dictionary,
-        }
-        return render(request, 'wordbook/home.html', context)
+            # for entry2 in get_meanings:
+            #     each_meaning = entry2['vocab_meaning']
+            #  meanings_list.append(each_meaning)
+        # dictionary = dict(zip(words_list, meanings_list))
+            context = {
+                'show_word': get_word_and_its_class,
+                'show_meaning': get_meanings,
+            }
+            return render(request, 'wordbook/home.html', context)
 
 
 class WordAddView(LoginRequiredMixin, generic.FormView):
