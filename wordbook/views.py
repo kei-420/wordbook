@@ -33,8 +33,8 @@ class HomeView(LoginRequiredMixin, generic.ListView):
     template_name = 'wordbook/home.html'
 
     def get(self, request, *args, **kwargs):
-        get_word_and_its_class = Word.objects.filter(wordbook__user=1).values('vocab')
-        get_words = get_word_and_its_class.values('vocab')
+        get_word_and_its_class = Word.objects.filter(wordbook__user=1).order_by('vocab')
+        # get_words = get_word_and_its_class.values('vocab')
         # words_list = []
         # for entry in get_words:
         #     each_word = entry['vocab']
