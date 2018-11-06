@@ -13,11 +13,11 @@
            <th></th>
        </tr>
     {% for data in show_word %}
-        {% for data2 in show_meaning %}
+{#        {% for data2 in show_meaning %}#}
         <tr align="center">
            <td>{{ data.vocab }}</td>
             <td>{{ data.vocab_class }}</td>
-            <td>{{ data2.vocab_meaning }}</td>
+            <td>{{ data.vocab_meaning }}</td>
 {#            <td><a class="btn btn-primary" href="{% url 'wordbook:delete_word' data.pk %}">削除</a></td>#}
 {#            <form action="{% url 'wordbook:delete_word' data.pk %}" method="post">{% csrf_token %}#}
            <form method="post">{% csrf_token %}
@@ -26,7 +26,7 @@
 {#            </form>#}
 {#			<a href="{% url 'blog_app:post_detail' post.pk %}">続きを読む</a>#}
 		</tr>
-        {% endfor %}
+{#        {% endfor %}#}
     {% endfor %}
     </table>
       {% include 'wordbook/paginate.html' %}
