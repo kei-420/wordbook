@@ -10,19 +10,23 @@
            <th>単語</th>
            <th>品詞</th>
            <th>意味</th>
-           <th>削除</th>
+           <th></th>
        </tr>
-    {% for data in show_data %}
+    {% for data in show_word %}
+        {% for data2 in show_meaning %}
         <tr align="center">
            <td>{{ data.vocab }}</td>
             <td>{{ data.vocab_class }}</td>
-            <td>{{ data.vocab_meaning }}</td>
+            <td>{{ data2 }}</td>
 {#            <td><a class="btn btn-primary" href="{% url 'wordbook:delete_word' data.pk %}">削除</a></td>#}
 {#            <form action="{% url 'wordbook:delete_word' data.pk %}" method="post">{% csrf_token %}#}
-{#                <td><button class="btn btn-primary" type="submit">削除</button></td>#}
+           <form method="post">{% csrf_token %}
+               <td><button class="btn btn-primary" type="submit">削除</button></td>
+        </form>
 {#            </form>#}
 {#			<a href="{% url 'blog_app:post_detail' post.pk %}">続きを読む</a>#}
 		</tr>
+        {% endfor %}
     {% endfor %}
     </table>
       {% include 'wordbook/paginate.html' %}
@@ -30,6 +34,6 @@
     <div align="center">
         <a class="btn btn-primary" href="{% url 'wordbook:add_word' %}">単語追加</a>
         <a class="btn btn-primary" href="{% url 'accounts:logout' %}">Logout</a>
-        <a class="btn btn-primary" href="{% url 'wordbook:repeated_game' %}">反復ゲームへ</a>
+{#        <a class="btn btn-primary" href="{% url 'wordbook:repeated_game' %}">反復ゲームへ</a>#}
      </div>
 {% endblock %}

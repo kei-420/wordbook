@@ -3,7 +3,7 @@
 {% block content %}
 <h1 align="center">-反復ゲーム-</h1>
     <body topmargin="40" rightmargin="50" leftmargin="50" bottommargin="30">
-<form action="" method="get">
+<form action="" method="post">
     <table align="center">
 {#        {% for  %}#}
             <tr align="center">
@@ -31,8 +31,9 @@
         <button class="btn btn-primary" type="submit">決定</button>
         </div>
     </form>
+
     <a class="btn btn-primary" href="{% url 'wordbook:home' %}">戻る</a>
-</form>
+{#</form>#}
     </body>
 {% endblock %}
 
