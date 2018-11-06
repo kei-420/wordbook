@@ -12,23 +12,6 @@ from .forms import WordAddForm
 from .models import Word, Wordbook, WordMeanings
 
 
-# def search_word_meanings(word):
-#     wordid = Word.objects.filter(vocab=word).values('wordid')
-#     wordid_list = []
-#     for row in wordid:
-#         get_its_words = row['wordid']
-#         wordid_list.append(get_its_words)
-#
-#     word_meanings_list = []
-#     for row1 in wordid_list:
-#         get_word_meanings = WordMeanings.objects.filter(wordid=row1, lang='jpn').values('vocab_meaning')
-#         for row2 in get_word_meanings:
-#             get_its_meanings = row2['vocab_meaning']
-#             word_meanings_list.append(get_its_meanings)
-#
-#     return word_meanings_list[0]
-
-
 def exec_query(sqltext):
     with connection.cursor() as cur:
         cur.execute(sqltext)
@@ -42,40 +25,23 @@ class HomeView(LoginRequiredMixin, generic.ListView):
     template_name = 'wordbook/home.html'
 
     def get(self, request, *args, **kwargs):
-        global words_list
         words = Word.objects.filter(wordbook__user=request.user).values('vocab')
-        sqltext_list = []
-        for w in words:
+        words_list = []
+        for entry in words:
+            words_list.append(entry['vocab'])
+        # sqltext_list = []
+        for w in words_list:
             sqltext = """
             SELECT vocab, vocab_class, vocab_meaning FROM word
             INNER JOIN word_meanings
             ON word.wordid = word_meanings.wordid
             WHERE word.vocab='%s' and word_meanings.lang='jpn'
-            """ % w['vocab']
-            sqltext_list.append(sqltext)
-            for s in sqltext_list:
-                words_list = exec_query(s)
-                return render(request, 'wordbook/home.html', {'show_word': words_list})
+            """ % w
+            # sqltext_list.append(sqltext)
+            # for s in sqltext_list:
+            show_list = exec_query(sqltext)
+            return render(request, 'wordbook/home.html', {'show_word': show_list})
 
-        # get_word_and_its_class = Word.objects.filter(wordbook__user=1).order_by('vocab')
-        # get_words = get_word_and_its_class.values('vocab')
-        # words_list = []
-        # for entry in get_words:
-        #     each_word = entry['vocab']
-        #     words_list.append(each_word)
-
-        # get_wordids = get_word_and_its_class.values('wordid')
-        # # meanings_list = []
-        # for entry in get_wordids:
-        #     get_meanings = WordMeanings.objects.filter(wordid=entry['wordid'], lang='jpn').values('vocab_meaning')
-        #     # for entry2 in get_meanings:
-        #     #     each_meaning = entry2['vocab_meaning']
-        #     #  meanings_list.append(each_meaning)
-        # # dictionary = dict(zip(words_list, meanings_list))
-        #     context = {
-        #         'show_word': get_word_and_its_class,
-        #         'show_meaning': get_meanings,
-        #     }
 
 class WordAddView(LoginRequiredMixin, generic.FormView):
     form_class = WordAddForm
@@ -93,31 +59,6 @@ class WordAddView(LoginRequiredMixin, generic.FormView):
         form.save(commit=True)
 
         return redirect('wordbook:home')
-#
-# class WordAddView(LoginRequiredMixin, generic.FormView):
-#     form_class = WordAddForm
-#     template_name = 'wordbook/word_add.html'
-#
-#     def get_form_kwargs(self):
-#         kwargs = super(WordAddView, self).get_form_kwargs()
-#         kwargs['user'] = self.request.user
-#         return kwargs
-#
-#     def post(self, request, *args, **kwargs):
-#         form = WordAddForm(request.POST, user=request.user)
-#         if not form.is_valid():
-#             return render(request, 'wordbook/word_add.html', {'form': form})
-#
-#         form.save(commit=True)
-#
-#         return redirect(reverse('wordbook:home'))
-#
-#
-# # def word_delete(pk=None):
-# #     instance = Wordbook.objects.filter(pk=pk)
-# #     instance.delete()
-# #     return redirect(reverse("wordbook:home"))
-#
 
 
 class WordDeleteView(generic.DeleteView):
@@ -180,4 +121,3 @@ class WordDeleteView(generic.DeleteView):
 #     #
 #     # def post(self, request, *args, **kwargs):
 #     #     if request.method == 'POST':
-#     #         for wo
