@@ -12,12 +12,12 @@
            <th>意味</th>
            <th></th>
        </tr>
-    {% for data in show_word %}
+    {% for entry in show_list %}
 {#        {% for data2 in show_meaning %}#}
         <tr align="center">
-           <td>{{ data.vocab }}</td>
-            <td>{{ data.vocab_class }}</td>
-            <td>{{ data.vocab_meaning }}</td>
+           <td>{{ entry.vocab }}</td>
+            <td>{{ entry.vocab_class }}</td>
+            <td>{{ entry.vocab_meaning }}</td>
 {#            <td><a class="btn btn-primary" href="{% url 'wordbook:delete_word' data.pk %}">削除</a></td>#}
 {#            <form action="{% url 'wordbook:delete_word' data.pk %}" method="post">{% csrf_token %}#}
            <form method="post">{% csrf_token %}

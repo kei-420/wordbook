@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse, HttpResponseRedirect, get_object_or_404
+from django.shortcuts import render, redirect, reverse, HttpResponseRedirect, get_object_or_404, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View, generic
 import numpy as np
@@ -25,22 +25,32 @@ class HomeView(LoginRequiredMixin, generic.ListView):
     template_name = 'wordbook/home.html'
 
     def get(self, request, *args, **kwargs):
-        words = Word.objects.filter(wordbook__user=request.user).values('vocab')
-        words_list = []
-        for entry in words:
-            words_list.append(entry['vocab'])
+        sqltext = """
+        SELECT vocab, vocab_class, vocab_meaning FROM word
+        INNER JOIN wordbook ON word.id = wordbook.word_id
+        INNER JOIN word_meanings ON word.wordid = word_meanings.wordid
+        WHERE word_meanings.lang='jpn' and wordbook.user_id=%s
+        """ % request.user.pk
+        show_list = exec_query(sqltext)
+        return render(request, 'wordbook/home.html', {'show_list': show_list})
+        # words = Word.objects.filter(wordbook__user=request.user).values('vocab')
+        # words_list = []
+        # for entry in words:
+        #     words_list.append(entry['vocab'])
         # sqltext_list = []
-        for w in words_list:
-            sqltext = """
-            SELECT vocab, vocab_class, vocab_meaning FROM word
-            INNER JOIN word_meanings
-            ON word.wordid = word_meanings.wordid
-            WHERE word.vocab='%s' and word_meanings.lang='jpn'
-            """ % w
-            # sqltext_list.append(sqltext)
-            # for s in sqltext_list:
-            show_list = exec_query(sqltext)
-            return render(request, 'wordbook/home.html', {'show_word': show_list})
+        # for w in words_list:
+        #     sqltext = """
+        #     SELECT vocab, vocab_class, vocab_meaning FROM word
+        #     INNER JOIN word_meanings
+        #     ON word.wordid = word_meanings.wordid
+        #     WHERE word.vocab='%s' and word_meanings.lang='jpn'
+        #     """ % w
+        #     # sqltext_list.append(sqltext)
+        #     # for s i   n sqltext_list:
+        #     sqltext_list.append(exec_query(sqltext))
+        # # for n in range(0, len(words_list)):
+        # #     show_list = sqltext_list[n]
+        # return render(request, 'wordbook/home.html', {'show_list': sqltext_list})
 
 
 class WordAddView(LoginRequiredMixin, generic.FormView):

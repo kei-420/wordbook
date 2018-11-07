@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'wordbook.apps.WordbookConfig',
     'bootstrap_modal_forms',
+    # 'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -39,6 +40,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'simple_history.middleware.HistoryRequestMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -128,3 +130,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 #     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 # )
+INSTALLED_APPS += ('debug_toolbar',)
+
+
+def always_show_toolbar(request):
+    return True
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': '%s.always_show_toolbar' % __name__,
+}
