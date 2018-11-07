@@ -1,22 +1,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form action="" method="post" class="ui form">{% csrf_token %}
-        <form action="" method="get" class="ui form">
-    {% for field in form %}
-
-        <div class="ui input{% if field.errors %} error{% endif %}" align="center">
-            {{ field }}
-        {% if field.errors %}
-        <p>{{ field.errors.0 }}</p>
-
-        {% endif %}
-    {% endfor %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'accounts/login.css' %}">
+    <div class="main-w3layouts wrapper">
+        <div class="main-agileinfo">
+            <h1>SELVOC</h1>
+            <h2>LOGIN</h2>
+			<div class="agileits-top">
+                <form action="" method="post">{% csrf_token %}
+                    <form action="" method="get">
+                        {% for field in form %}
+                            {{ field }}
+                            {% if field.errors %}
+                                <p>{{ field.errors.0 }}</p>
+                            {% endif %}
+{#					<input class="text" type="text" name="Username" placeholder="Username" required="">#}
+{#					<input class="text email" type="email" name="email" placeholder="Email" required="">#}
+{#					<input class="text" type="password" name="password" placeholder="Password" required="">#}
+{#					<input class="text w3lpass" type="password" name="password" placeholder="Confirm Password" required="">#}
+{#					<div class="wthree-text">#}
+{#						<label class="anim">#}
+{#							<input type="checkbox" class="checkbox" required="">#}
+{#							<span>I Agree To The Terms & Conditions</span>#}
+{#						</label>#}
+{#						<div class="clear"> </div>#}
+{#					</div>#}
+                        {% endfor %}
+                        <input type="submit" value="SIGN IN">
+                    </form>
+                </form>
+                <p>New to SELVOC? <a href="{% url 'accounts:signup' %}"> SignUp now!</a></p>
+            </div>
         </div>
-        <div align="center">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </div>
-        </form>
-        <p>New to Blog? <a href="{% url 'accounts:signup' %}">Signup now!</a></p>
-    </form>
+		<!-- copyright -->
+		<div class="colorlibcopy-agile">
+			<p>© 2018 Colorlib Signup Form. All rights reserved | Design by <a href="https://colorlib.com/" target="_blank">Colorlib</a></p>
+		</div>
+		<!-- //copyright -->
+		<ul class="colorlib-bubbles">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</div>
+	<!-- //main -->
 {% endblock %}
