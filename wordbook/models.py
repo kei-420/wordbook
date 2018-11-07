@@ -40,6 +40,7 @@ class Wordbook(models.Model):
 
     user = models.ForeignKey(UserManager, on_delete=models.PROTECT)
     word = models.ForeignKey(Word, on_delete=models.PROTECT)
+    word_meaning = models.ForeignKey(WordMeanings, on_delete=models.PROTECT)
     adding_word = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 

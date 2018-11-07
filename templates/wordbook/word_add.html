@@ -2,20 +2,19 @@
 
 {% block content %}
     <form action="" method="post">{% csrf_token %}
-    <div align="center">
-         {% for field in form %}
-        <div class="ui input{% if field.errors %} error{% endif %}" align="center">
-            {{ field }}
-        {% if field.errors %}
-        <p>{{ field.errors.0 }}</p>
-
-        {% endif %}
-    {% endfor %}
+        <div align="center">
+            {% for field in form %}
+                <div class="ui input{% if field.errors %} error{% endif %}" align="center">
+                    {{ field }}
+                {% if field.errors %}
+                    <p>{{ field.errors.0 }}</p>
+                {% endif %}
+            {% endfor %}
         </div>
-    <div align="center">
-        <button type="submit" class="btn btn-primary">追加</button>
-        <a class="btn btn-primary" href="{% url 'wordbook:home' %}">戻る</a>
-    </div>
-    </div>
+            <div align="center">
+                <button type="submit" class="btn btn-primary">追加</button>
+                <a class="btn btn-primary" href="{% url 'wordbook:home' %}">戻る</a>
+            </div>
+        </div>
     </form>
 {% endblock %}

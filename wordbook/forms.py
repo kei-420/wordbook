@@ -41,7 +41,9 @@ class WordAddForm(forms.ModelForm):
     def save(self, commit=True):
         word_info = super(WordAddForm, self).save(commit=False)
         get_word_id = Word.objects.filter(vocab=word_info).first()
+        get_word_meaning_id = WordMeanings.objects.filter(wordid=get_word_id.wordid, lang='jpn').values('pk').first()
         word_info.word_id = get_word_id.pk
+        word_info.word_meaning_id = get_word_meaning_id['pk']
         word_info.user = self._user
         if commit:
             word_info.save()
