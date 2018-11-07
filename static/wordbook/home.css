@@ -1,0 +1,282 @@
+npm install @material/button
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, dl, dt, dd, ol, nav ul, nav li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+ol, ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content: '';
+  content: none;
+}
+
+
+/* Table Layout */
+table.wordbook {
+    margin: 10px 0 0 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: #212121;
+    color: #fff;
+}
+
+table.wordbook th, table.wordbook td {
+    text-align: center;
+}
+
+table.wordbook thead {
+    line-height: 25px;
+    background: #45887b;
+    text-transform: uppercase;
+}
+
+table.wordbook thead th {
+    color: #fff;
+    padding: 10px;
+    letter-spacing: 1px;
+    vertical-align: bottom;
+}
+
+table.wordbook thead th:nth-child(1) {
+    width: 25%;
+    text-align: center;
+    padding-left: 20px;
+}
+
+table.wordbook thead th:nth-child(2) {
+    width: 25%;
+}
+
+table.wordbook thead th:nth-child(3) {
+    width: 50%;
+}
+
+table.wordbook thead th:nth-child(4) {
+    width: 25%;
+}
+
+table.wordbook tbody {
+    font-size: 1em;
+    line-height: 15px;
+}
+
+table.wordbook tbody tr {
+    border-top: 2px solid rgba(109, 176, 231, 0.8);
+    transition: background 0.6s, color 0.6s;
+}
+
+table.wordbook tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+table.wordbook tbody tr:hover {
+    color: #000;
+    background: rgba(255, 255, 255, 0.7);
+    font-weight: 900;
+}
+
+table.wordbook tbody td {
+    padding: 12px;
+}
+
+table.wordbook tbody tr:hover td:first-child {
+    background: rgba(0,0,0,0);
+}
+
+table.wordbook tbody td:first-child {
+    text-align: center;
+    padding-left: 20px;
+    font-weight: 700;
+    background: rgba(109, 176, 231, 0.35);
+    transition: backgrounf 0.6s;
+}
+
+table.wordbook tfoot {
+    font-size: 0.8em;
+}
+
+table.wordbook tfoot tr {
+    border-top: 2px solid #2e63e7;
+}
+
+table.wordbook tfoot td {
+    color: rgba(255,255,215,0.6);
+    text-align: center;
+    line-height: 15px;
+    padding: 15px 20px;
+}
+
+
+/* Mobile Layout */
+
+@media screen and (max-width: 400px) {
+    h1 {
+        font-size: 34px;
+        line-height: 36px;
+        padding-left: 15px;
+    }
+
+    article {
+        margin: 10px 15px;
+    }
+
+    table.vitamins {
+        font-size: 0.8em;
+    }
+}
+
+/*-- start editing from here --*/
+a {
+  text-decoration: none;
+}
+
+.txt-rt {
+  text-align: right;
+}
+
+/* text align right */
+.txt-lt {
+  text-align: left;
+}
+
+/* text align left */
+.txt-center {
+  text-align: center;
+}
+
+/* text align center */
+.float-rt {
+  float: right;
+}
+
+/* float right */
+.float-lt {
+  float: left;
+}
+
+/* float left */
+.clear {
+  clear: both;
+}
+
+/* clear float */
+.pos-relative {
+  position: relative;
+}
+
+/* Position Relative */
+.pos-absolute {
+  position: absolute;
+}
+
+/* Position Absolute */
+.vertical-base {
+  vertical-align: baseline;
+}
+
+/* vertical align baseline */
+.vertical-top {
+  vertical-align: top;
+}
+
+/* vertical align top */
+nav.vertical ul li {
+  display: block;
+}
+
+/* vertical menu */
+nav.horizontal ul li {
+  display: inline-block;
+}
+
+/* horizontal menu */
+img {
+  max-width: 100%;
+}
+
+body {
+  /*background: #4992b8;*/
+  /*background-image: url("/static/background.jpg");*/
+  /* fallback for old browsers */
+  /*background: -webkit-linear-gradient(to top, #4992b8, #4992b8);*/
+  background: -moz-linear-gradient(to top, #4992b8, #4992b8);
+  background: -o-linear-gradient(to top, #4992b8, #4992b8);
+  /*background: linear-gradient(to top, #4992b8, #4992b8);*/
+  background-size: cover;
+  background-attachment: fixed;
+  font-family: 'Roboto', sans-serif;
+}
+
+/*h1, h2, h3, h4, h5, h6 {*/
+  /*font-family: "Raleway";*/
+  /*font-weight: 300;*/
+  /*color: #333;*/
+/*}*/
+
+
+h1 {
+  font-size: 3em;
+  text-align: center;
+  color: #ffffff;
+  font-weight: 100;
+  text-transform: capitalize;
+  letter-spacing: 4px;
+  font-family: 'Roboto', sans-serif;
+}
+
+h2 {
+  font-size: 1.5em;
+  text-align: center;
+  color: #000000;
+  font-weight: 100;
+  text-transform: capitalize;
+  letter-spacing: 4px;
+  font-family: 'Roboto', sans-serif;
+}
+
+
+    .button {
+        /*background-color: rgb(0, 0, 0);*/
+        border: none;
+        color: #000000;
+        /*padding: 12px 16px;*/
+        font-size: 5px;
+        cursor: pointer;
+    }
+
+/* Darker background on mouse-over */
+    .button:hover {
+        background-color: #696f63;
+    }
+    .small-btn {
+        width: 50px;
+        height: 25px;
+    }
+
+    .medium-btn {
+        width: 70px;
+        height: 30px;
+    }
+
+    .big-btn {
+        width: 150px;
+        height: 60px;
+    }

@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
+{% block meta_title %}
+    SELVOC
+{% endblock %}
 {% block content %}
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {% load static %}
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'wordbook/home.css' %}"
     <!-- グローバルナビゲーション -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -9,57 +15,57 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <h1>SELVOC</h1>
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'wordbook:home' %}">Home</a>
-      </li>
-      <li class="nav-item">
-          <a class="nav-link" href="{% url 'wordbook:repeated_game' %}">Practice</a>
-      </li>
     </ul>
-       <li class="nav-item">
-          <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
-      </li>
+      <a class="nav-link" href="{% url 'wordbook:home' %}">Home</a>
+      <a class="nav-link" href="{% url 'wordbook:repeated_game' %}">Practice</a>
+      <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
   </div>
 </nav>
     <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1 class="mt-5">{% block page_title %}WORDBOOK（
-          {% if user.is_authenticated %}
-            {{ user.get_username }}でログイン中
-          {% else %}
-              ログインしていません
-          {% endif %}）
-      {% endblock %}</h1>
+{#      <h2 class="mt-5">{% block page_title %}WORDBOOK（#}
+{#          {% if user.is_authenticated %}#}
+{#            {{ user.get_username }}でログイン中#}
+{#          {% else %}#}
+{#              ログインしていません#}
+{#          {% endif %}）#}
+{#      {% endblock %}</h2>#}
     </div>
   </div>
 </div>
     <form class="col-md-12">
-            <table border="3" class="container">
-                <tr align="center">
+            <table border="3" class="wordbook">
+             <thead>
+                <tr>
                     <th>単語</th>
                     <th>品詞</th>
                     <th>意味</th>
 {#                    <th>ID</th>#}
                     <th></th>
                 </tr>
-            {% for entry in show_list %}
-                <tr align="center">
+             </thead>
+            <tbody>
+                {% for entry in show_list %}
+                <tr>
                     <td>{{ entry.vocab }}</td>
                     <td>{{ entry.vocab_class }}</td>
                     <td>{{ entry.vocab_meaning }}</td>
 {#                    <td>{{ entry.id }}</td>#}
                     <td><form method="POST" action="{% url 'wordbook:delete_word' entry.id %}">
-                        {% csrf_token %}<button type="submit" class="btn btn-primary">削除</button>
+                        {% csrf_token %}
+                       <button type="submit" class="btn"><i class="fa fa-trash"></i></button>
                     </form></td>
 	        	</tr>
             {% endfor %}
+            </tbody>
             </table>
         {% include 'wordbook/paginate.html' %}
     </form>
     <div align="center">
-        <a class="btn btn-primary" href="{% url 'wordbook:add_word' %}">単語追加</a>
+        <a class="btn btn-primary big-btn" href="{% url 'wordbook:add_word' %}">単語追加</a>
 {#        <a class="btn btn-primary" href="{% url 'accounts:logout' %}">Logout</a>#}
 {#        <a class="btn btn-primary" href="{% url 'wordbook:repeated_game' %}">反復ゲームへ</a>#}
     </div>

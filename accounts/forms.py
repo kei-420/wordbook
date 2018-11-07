@@ -67,7 +67,7 @@ class LogInForm(forms.Form):
     username = UsernameField(
         label='username',
         max_length=255,
-        widget=forms.TextInput(attrs={'placeholder': 'username',
+        widget=forms.TextInput(attrs={'placeholder': 'Username',
                                       'autofocus': True})
     )
     """ -> render_value=True > ログイン画面に戻った際にパスワードが入力された状態のまま。
@@ -75,7 +75,7 @@ class LogInForm(forms.Form):
     password = forms.CharField(
         label='password',
         strip=False,
-        widget=forms.PasswordInput(attrs={'placeholder': 'password'}, render_value=True)
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password'}, render_value=True)
     )
 
     def __init__(self, *args, **kwargs):
