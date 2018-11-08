@@ -12,26 +12,19 @@ from .forms import WordAddForm
 from .models import Word, Wordbook, WordMeanings
 
 
-def exec_query(sqltext):
-    with connection.cursor() as cur:
-        cur.execute(sqltext)
-        columns = [col[0] for col in cur.description]
-        dict1 = [dict(zip(columns, row)) for row in cur.fetchall()]
-        return dict1
-
+# def exec_query(sqltext):
+#     with connection.cursor() as cur:
+#         cur.execute(sqltext)
+#         columns = [col[0] for col in cur.description]
+#         dict1 = [dict(zip(columns, row)) for row in cur.fetchall()]
+#         return dict1
 
 class HomeView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
     template_name = 'wordbook/home.html'
 
     def get(self, request, *args, **kwargs):
-        sqltext = """
-        SELECT vocab, vocab_class, vocab_meaning, wordbook.id FROM word
-        INNER JOIN wordbook ON word.id = wordbook.word_id
-        INNER JOIN word_meanings ON word.wordid = word_meanings.wordid
-        WHERE word_meanings.lang='jpn' and wordbook.user_id=%s
-        """ % request.user.pk
-        show_list = exec_query(sqltext)
+        show_list = Wordbook.exec_query(request.user.pk)
         return render(request, 'wordbook/home.html', {'show_list': show_list})
 
 

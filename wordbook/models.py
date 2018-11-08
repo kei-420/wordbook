@@ -7,6 +7,7 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from accounts.models import UserManager
+from django.db import connection
 
 
 class WordMeanings(models.Model):
@@ -47,6 +48,19 @@ class Wordbook(models.Model):
     def __str__(self):
         return self.adding_word
 
+    @staticmethod
+    def exec_query(user):
+        with connection.cursor() as cur:
+            sqltext = """
+                    SELECT vocab, vocab_class, vocab_meaning, wordbook.id FROM word
+                    INNER JOIN wordbook ON word.id = wordbook.word_id
+                    INNER JOIN word_meanings ON word.wordid = word_meanings.wordid
+                    WHERE word_meanings.lang='jpn' and wordbook.user_id=%s
+                    """ % user
+            cur.execute(sqltext)
+            columns = [col[0] for col in cur.description]
+            dict1 = [dict(zip(columns, row)) for row in cur.fetchall()]
+            return dict1
 
 # class RepeatedGame(models.Model):
 #     class Meta:
