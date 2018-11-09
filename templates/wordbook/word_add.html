@@ -17,4 +17,53 @@
             </div>
         </div>
     </form>
+
 {% endblock %}
+{#<form action="" method="post">{% csrf_token %}#}
+{#{% load crispy_forms_tags %}#}
+{#<div class="modal fade" id="modalSubscriptionForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"#}
+{#  aria-hidden="true" style="position: fixed; right: 0; top: 40%">#}
+{#  <div class="modal-dialog" role="document">#}
+{#    <div class="modal-content">#}
+{#      <div class="modal-header text-center">#}
+{#        <h4 class="modal-title w-100 font-weight-bold">単語追加</h4>#}
+{#        <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#          <span aria-hidden="true">&times</span>#}
+{#        </button>#}
+{##}
+{#      </div>#}
+{##}
+{#      <div id="form-modal-body" class="modal-body">#}
+{#      <form action="" method="post">{% csrf_token %}#}
+{#        {% for field in form %}#}
+{#      <div class="form-group{% if field.errors %} invalid{% endif %}">#}
+{#        <label for="{{ field.id_for_label }}">{{ field.label }}</label>#}
+{##}
+{#          {% crispy form.adding_word %}#}
+{#          {{ form }}#}
+{##}
+{#        {% for error in field.errors %}#}
+{#          <p class="help-block">{{ error }}</p>#}
+{#        {% endfor %}#}
+{#      </div>#}
+{#    {% endfor %}#}
+{#          </form>#}
+{#             <div style="margin-left: 90%">#}
+{#       <button type="submit" class="btn btn-indigo"><i class="fa fa-plus" style="font-size:40px;color:lightseagreen"></i></button>#}
+{#                </div>#}
+{#      </div>#}
+{#<div class="md-form mb-4">#}
+{#          <input type="email" id="form2" class="form-control validate">#}
+{#          <label data-error="wrong" data-success="right" for="form2"></label>#}
+{#        </div>#}
+{#      </div>#}
+{#      <div class="modal-footer d-flex justify-content-center">#}
+{#        <button type="submit" class="btn btn-indigo"><i class="fa fa-plus" style="font-size:40px;color:lightseagreen"></i></button>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
+{##}
+{#<div style="width: 200px; z-index: 10; position: fixed; right: 0; bottom: 10%; height: 83px;">#}
+{#    <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalSubscriptionForm">#}
+{#        <i class="fa fa-plus" style="font-size:100px;color:lightseagreen"></i></a>#}
+{#</div>#}

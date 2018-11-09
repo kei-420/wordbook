@@ -9,21 +9,21 @@ class SignUpForm(forms.ModelForm):
         model = UserManager
         fields = ('username', 'email', 'password', )
         widgets = {
-            'password': forms.PasswordInput(attrs={'placeholder': 'Password'}),
+            'password': forms.PasswordInput(attrs={'placeholder': '*Password'}),
         }
 
     confirm_password = forms.CharField(
         label='確認用パスワード',
         required=True,
         strip=False,
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
+        widget=forms.PasswordInput(attrs={'placeholder': '*Confirm Password'}),
     )
 
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs = {'placeholder': 'Username'}
+        self.fields['username'].widget.attrs = {'placeholder': '*Username'}
         self.fields['email'].required = True
-        self.fields['email'].widget.attrs = {'placeholder': 'Email'}
+        self.fields['email'].widget.attrs = {'placeholder': '*Email'}
         # self.fields['password'].widget.attrs = {'placeholder': 'password'}
 
     def clean_username(self):

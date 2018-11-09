@@ -71,7 +71,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wordbook_test',
+        'NAME': 'wordbook_db',
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': 'localhost',
@@ -135,8 +135,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 # )
 
 
-
-INSTALLED_APPS += ('debug_toolbar',)
+INSTALLED_APPS += ('debug_toolbar', 'crispy_forms')
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 def always_show_toolbar(request):

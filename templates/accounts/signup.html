@@ -6,33 +6,12 @@
 {% block content %}
     {% load static %}
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'accounts/signup.css' %}">
-{#    <form action="" method="post" class="ui form">#}
-{#        <form action="" method="get" class="ui form">#}
-{#    {% for field in form %}#}
-{##}
-{#        <div class="ui input{% if field.errors %} error{% endif %}" align="center">#}
-{#            {{ field }}#}
-{#        {% if field.errors %}#}
-{#        <p>{{ field.errors.0 }}</p>#}
-{##}
-{#        {% endif %}#}
-{#    {% endfor %}#}
-{#        </div>#}
-{#        <div align="center">#}
-{#            <button type="submit" class="btn btn-primary">Sign Up</button>#}
-{#            {% csrf_token %}#}
-{#        </div>#}
-{#        </form>#}
-{#    <p>Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>#}
-{#    </form>#}
-	<!-- main -->
 	<div class="main-w3layouts wrapper">
 
 		<div class="main-agileinfo">
             <h1>SELVOC</h1>
 
 		<h2>SIGN UP</h2>
-{#            {% for field in form %}#}
 			<div class="agileits-top">
 				<form action="" method="post">{% csrf_token %}
                     <form action="" method="get">
@@ -41,24 +20,12 @@
                             {% if field.errors %}
                             <p>{{ field.errors.0 }}</p>
                             {% endif %}
-{#					<input class="text" type="text" name="Username" placeholder="Username" required="">#}
-{#					<input class="text email" type="email" name="email" placeholder="Email" required="">#}
-{#					<input class="text" type="password" name="password" placeholder="Password" required="">#}
-{#					<input class="text w3lpass" type="password" name="password" placeholder="Confirm Password" required="">#}
-{#					<div class="wthree-text">#}
-{#						<label class="anim">#}
-{#							<input type="checkbox" class="checkbox" required="">#}
-{#							<span>I Agree To The Terms & Conditions</span>#}
-{#						</label>#}
-{#						<div class="clear"> </div>#}
-{#					</div>#}
                     {% endfor %}
 					<input type="submit" value="REGISTER">
                     </form>
 				</form>
 				<p>Already have an account? <a href="{% url 'accounts:login' %}"> Login Now!</a></p>
 			</div>
-{#            {% endfor %}#}
 		</div>
 		<!-- copyright -->
 		<div class="colorlibcopy-agile">

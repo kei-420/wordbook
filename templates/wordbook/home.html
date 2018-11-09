@@ -16,23 +16,17 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <h1>SELVOC</h1>
+      <h2 style="margin-left: 2%">Home</h2>
     <ul class="navbar-nav mr-auto">
     </ul>
-      <a class="nav-link" href="{% url 'wordbook:home' %}">Home</a>
+{#      <a class="nav-link" href="{% url 'wordbook:home' %}">Home</a>#}
       <a class="nav-link" href="{% url 'wordbook:repeated_game' %}">Practice</a>
       <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
   </div>
 </nav>
-    <div class="container">
+<div class="container">
   <div class="row">
     <div class="col-12">
-{#      <h2 class="mt-5">{% block page_title %}WORDBOOK（#}
-{#          {% if user.is_authenticated %}#}
-{#            {{ user.get_username }}でログイン中#}
-{#          {% else %}#}
-{#              ログインしていません#}
-{#          {% endif %}）#}
-{#      {% endblock %}</h2>#}
     </div>
   </div>
 </div>
@@ -43,7 +37,6 @@
                     <th>単語</th>
                     <th>品詞</th>
                     <th>意味</th>
-{#                    <th>ID</th>#}
                     <th></th>
                 </tr>
              </thead>
@@ -54,19 +47,61 @@
                     <td>{{ entry.vocab_class }}</td>
                     <td>{{ entry.vocab_meaning }}</td>
 {#                    <td>{{ entry.id }}</td>#}
-                    <td><form method="POST" action="{% url 'wordbook:delete_word' entry.id %}">
-                        {% csrf_token %}
-                       <button type="submit" class="btn"><i class="fa fa-trash"></i></button>
-                    </form></td>
+                    <td>
+                        <form method="POST" action="{% url 'wordbook:delete_word' entry.pk %}">{% csrf_token %}
+                             <button type="submit"><i class="fa fa-minus" style="font-size:10px;color:lightseagreen"></i></button>
+                        </form>
+                    </td>
 	        	</tr>
-            {% endfor %}
+                {% endfor %}
             </tbody>
             </table>
-        {% include 'wordbook/paginate.html' %}
+{#                {% include 'wordbook/paginate.html' %}#}
+{#                    {% include 'wordbook/word_add.html' %}#}
     </form>
-    <div align="center">
-        <a class="btn btn-primary big-btn" href="{% url 'wordbook:add_word' %}">単語追加</a>
-{#        <a class="btn btn-primary" href="{% url 'accounts:logout' %}">Logout</a>#}
-{#        <a class="btn btn-primary" href="{% url 'wordbook:repeated_game' %}">反復ゲームへ</a>#}
-    </div>
+
+
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
+
+
+{#<div class="pagination">#}
+{#    <span class="step-links">#}
+{#        {% if show_list.has_previous %}#}
+{#            <a href="?page=1">&laquo; first</a>#}
+{#            <a href="?page={{ show_list.previous_page_number }}">previous</a>#}
+{#        {% endif %}#}
+{##}
+{#        <span class="current">#}
+{#            Page {{ show_list.number }} of {{ show_list.paginator.num_pages }}.#}
+{#        </span>#}
+{##}
+{#        {% if show_list.has_next %}#}
+{#            <a href="?page={{ show_list.next_page_number }}">next</a>#}
+{#            <a href="?page={{ show_list.paginator.num_pages }}">last &raquo;</a>#}
+{#        {% endif %}#}
+{#    </span>#}
+{#</div>#}
+
 {% endblock %}
