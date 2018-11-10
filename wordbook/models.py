@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import UserManager
-# from django.db import connection
+from django.db import connection
+from django.utils.encoding import python_2_unicode_compatible
 
 
 # class WordMeanings(models.Model):
@@ -54,7 +55,18 @@ class Wordbook(models.Model):
     #         columns = [col[0] for col in cur.description]
     #         show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
     #         return show_list
-
+    @staticmethod
+    def exec_query(user):
+        with connection.cursor() as cur:
+            sqltext = """
+            SELECT wordbook.id, word.vocab, word.vocab_class, word.vocab_meaning 
+            FROM wordbook LEFT OUTER JOIN word 
+            ON wordbook.word_id = word.id 
+            WHERE user_id = %s""" % user
+            cur.execute(sqltext)
+            columns = [col[0] for col in cur.description]
+            show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
+            return show_list
 # class Practice(models.Model):
 #     class Meta:
 #         db_table = 'practice'
@@ -79,3 +91,25 @@ class Wordbook(models.Model):
 #         unique_together = [
 #
 #         ]
+
+
+# class Practice(models.Model):
+#     game_word = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
+#     # player = models.ForeignKey(UserManager, on_delete=models.PROTECT)
+#     random_order = models.BooleanField(blank=False, default=False)
+#     num_of_answered_questions = models.PositiveIntegerField(blank=True, null=True)
+#     answers_at_end = models.BooleanField(blank=False, default=True)
+#     game_trials = models.PositiveIntegerField()
+#
+#
+# class PracticeProgress(models.Model):
+#     player = models.ForeignKey(UserManager, on_delete=models.PROTECT)
+#     progress = models.CommaSeparatedIntegerField()
+#
+#
+# @python_2_unicode_compatible
+# class Question(models.Model):
+#     quiz = models.ManyToManyField(Wordbook,
+#                                   verbose_name='Quiz',
+#                                   blank=True)
+

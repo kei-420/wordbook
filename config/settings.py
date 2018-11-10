@@ -135,8 +135,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 # )
 
 
-INSTALLED_APPS += ('debug_toolbar', 'crispy_forms')
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+INSTALLED_APPS += ('debug_toolbar',)
 
 
 def always_show_toolbar(request):

@@ -3,6 +3,7 @@ import random
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.views import View, generic
 from django.urls import reverse_lazy
 
@@ -12,13 +13,19 @@ from .models import Wordbook, Word
 
 class HomeView(LoginRequiredMixin, generic.ListView):
     model = Wordbook
-    paginate_by = 10
+    paginate_by = 5
     template_name = 'wordbook/home.html'
 
     def get(self, request, *args, **kwargs):
         # show_list = Wordbook.exec_query(request.user.pk)
-        show_list = Word.objects.filter(wordbook__user=request.user)
-        return render(request, 'wordbook/home.html', {'show_list': show_list})
+        # show_list = Word.objects.filter(wordbook__user_id=request.user)
+        show_list2 = Wordbook.exec_query(request.user.pk)
+        # a = Wordbook.objects.filter(word__wordbook__user_id=request.user)
+        context = {
+            # 'show_list': show_list,
+            'show_list2': show_list2,
+        }
+        return render(request, 'wordbook/home.html', context)
 
 
 class WordAddView(LoginRequiredMixin, generic.FormView):

@@ -2,23 +2,6 @@ from django import forms
 from .models import Wordbook, Word
 
 
-# def search_word_meanings(word):
-#     wordid = Word.objects.filter(vocab=word).values('wordid')
-#     wordid_list = []
-#     for row in wordid:
-#         word = row['wordid']
-#         wordid_list.append(word)
-#
-#     word_meanings_list = []
-#     for row1 in wordid_list:
-#         get_word_meanings = WordMeanings.objects.filter(wordid=row1, lang='jpn').values('vocab_meaning')
-#         for row2 in get_word_meanings:
-#             get_its_meanings = row2['vocab_meaning']
-#             word_meanings_list.append(get_its_meanings)
-#
-#     return word_meanings_list
-
-#
 class WordAddForm(forms.ModelForm):
     class Meta:
         model = Wordbook
@@ -31,11 +14,12 @@ class WordAddForm(forms.ModelForm):
 
     def clean_adding_word(self):
         adding_word = self.cleaned_data['adding_word']
-        # reverse_search_word = Word.objects.filter(vocab_meaning__contains=adding_word)
-        # if reverse_search_word.exists():
-        #     adding_word = list(reverse_search_word[0]['vocab_meaning'])
-        # else:
-        #     raise forms.ValidationError('入力された日本語の意味は検索できませんでした。')
+        reverse_search_word = Word.objects.filter(vocab_meaning__contains=adding_word)
+        if reverse_search_word.exists():
+            for entry in reverse_search_word:
+                adding_word = entry
+        else:
+            raise forms.ValidationError('入力された日本語に該当する英単語は存在しません。')
         if not Word.objects.filter(vocab=adding_word):
             raise forms.ValidationError('入力された単語は存在しません。\n'
                                         'スペル等を確認して下さい。')
@@ -56,53 +40,3 @@ class WordAddForm(forms.ModelForm):
         if commit:
             word_info.save()
         return word_info
-#
-#
-# class RepeatedGameForm(forms.Form):
-#     user_choices = forms.ChoiceField()
-
-# class RepeatedGameForm(forms.Form):
-#     user_choices = forms.ChoiceField(label='属性', widget=forms.RadioSelect, choices=CHOICES)
-#
-#     def __init__(self, *args, **kwargs):
-#         self.user = kwargs.pop('user', None)
-#         super(RepeatedGameForm, self).__init__(*args, **kwargs)
-#
-#     def clean_user_choices(self):
-#         user_choices = self.cleaned_data['user_choices']
-#         return user_choices
-
-# class RepeatedGameForm(forms.Form):
-#     answers = forms.ChoiceField(widget=forms.RadioSelect(), label=u"Please select a answer:")
-#
-#     def __init__(self, question, *args, **kwargs):
-#         super(RepeatedGameForm, self).__init__(*args, **kwargs)
-#         self.question = question
-#         answers = question.answers.order_by('weight')
-#         self.fields['answers'].choices = [(i, a.answer) for i, a in enumerate(answers)]
-#
-#         for pos, answer in enumerate(answers):
-#             if answer.id == question.correct_answer_id:
-#                 self.correct = pos
-#             break
-#
-#     def is_correct(self):
-#         if not self.is_valid():
-#             return False
-#
-#         return self.cleaned_data['answers'] == str(self.question.correct_answer.id)
-
-
-# class QuizForm(forms.Form):
-#     choices = forms.ModelChoiceField(queryset=MultipleChoiceAnswer.objects.none(),widget=forms.CheckboxSelectMultiple, required=True, show_hidden_initial=True)
-#
-#     def __init__(self, question):
-#         super(QuizForm, self).__init__()
-#         self.fields['choices'].queryset = question.choices.all()
-#         self.fields['choices'].empty_label = None
-#
-#
-# class QuizForm2(forms.Form):
-#     def __init__(self, question, *args, **kwargs):
-#         super(QuizForm2, self).__init__(*args, **kwargs)
-#         self.fields['choices'] = forms.ChoiceField(widget=forms.CheckboxSelectMultiple, choices=[ (x.id, x.answer) for x in question.choices.all()])

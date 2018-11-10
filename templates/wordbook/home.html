@@ -4,10 +4,12 @@
     SELVOC
 {% endblock %}
 {% block content %}
+{% load static %}
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    {% load static %}
-    <link rel="stylesheet" type="text/css" media="all" href="{% static 'wordbook/home.css' %}"
+
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'wordbook/home.css' %}">
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
     <!-- グローバルナビゲーション -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +26,7 @@
       <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
   </div>
 </nav>
+<body style="background: #939393">
 <div class="container">
   <div class="row">
     <div class="col-12">
@@ -41,14 +44,14 @@
                 </tr>
              </thead>
             <tbody>
-                {% for entry in show_list %}
+                {% for entry in show_list2 %}
                 <tr>
                     <td>{{ entry.vocab }}</td>
                     <td>{{ entry.vocab_class }}</td>
                     <td>{{ entry.vocab_meaning }}</td>
 {#                    <td>{{ entry.id }}</td>#}
                     <td>
-                        <form method="POST" action="{% url 'wordbook:delete_word' entry.pk %}">{% csrf_token %}
+                        <form method="POST" action="{% url 'wordbook:delete_word' entry.id %}">{% csrf_token %}
                              <button type="submit"><i class="fa fa-minus" style="font-size:10px;color:lightseagreen"></i></button>
                         </form>
                     </td>
@@ -56,52 +59,12 @@
                 {% endfor %}
             </tbody>
             </table>
-{#                {% include 'wordbook/paginate.html' %}#}
-{#                    {% include 'wordbook/word_add.html' %}#}
+                {% include 'wordbook/paginate.html' %}
+{#                   {% include 'wordbook/word_add.html' %}#}
+<div style="width: 200px; z-index: 10; position: fixed; right: 4%; bottom: 13%; height: 83px;">
+    <a class="btn" href="{% url 'wordbook:add_word' %}">
+        <i class="fa fa-plus" style="font-size:150px;color:rgb(251,244,255)"></i></a>
+</div>
     </form>
-
-
-
-{% if is_paginated %}
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&laquo;</span></li>
-    {% endif %}
-    {% for i in paginator.page_range %}
-      {% if page_obj.number == i %}
-        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-      {% else %}
-        <li><a href="?page={{ i }}">{{ i }}</a></li>
-      {% endif %}
-    {% endfor %}
-    {% if page_obj.has_next %}
-      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-  </ul>
-{% endif %}
-
-
-
-{#<div class="pagination">#}
-{#    <span class="step-links">#}
-{#        {% if show_list.has_previous %}#}
-{#            <a href="?page=1">&laquo; first</a>#}
-{#            <a href="?page={{ show_list.previous_page_number }}">previous</a>#}
-{#        {% endif %}#}
-{##}
-{#        <span class="current">#}
-{#            Page {{ show_list.number }} of {{ show_list.paginator.num_pages }}.#}
-{#        </span>#}
-{##}
-{#        {% if show_list.has_next %}#}
-{#            <a href="?page={{ show_list.next_page_number }}">next</a>#}
-{#            <a href="?page={{ show_list.paginator.num_pages }}">last &raquo;</a>#}
-{#        {% endif %}#}
-{#    </span>#}
-{#</div>#}
-
+</body>
 {% endblock %}
