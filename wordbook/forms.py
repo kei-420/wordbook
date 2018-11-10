@@ -25,8 +25,6 @@ class WordAddForm(forms.ModelForm):
                                         'スペル等を確認して下さい。')
         if Wordbook.objects.filter(adding_word=adding_word, user_id=self._user).exists():
             raise forms.ValidationError('入力された単語は既に単語帳内に存在しています。')
-        # if not reverse_search_word.exists():
-        #     raise forms.ValidationError('入力された日本語の意味は検索できませんでした。')
         return adding_word
 
     def save(self, commit=True):

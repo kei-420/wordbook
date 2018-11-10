@@ -4,18 +4,6 @@ from django.db import connection
 from django.utils.encoding import python_2_unicode_compatible
 
 
-# class WordMeanings(models.Model):
-#     class Meta:
-#         db_table = 'word_meanings'
-#
-#     wordid = models.CharField(max_length=255)
-#     vocab_meaning = models.TextField()
-#     lang = models.CharField(max_length=10)
-#
-#     def __str__(self):
-#         return str(self.wordid) + ' | ' + str(self.vocab_meaning)
-#
-
 class Word(models.Model):
     class Meta:
         db_table = 'word'
@@ -101,15 +89,58 @@ class Wordbook(models.Model):
 #     answers_at_end = models.BooleanField(blank=False, default=True)
 #     game_trials = models.PositiveIntegerField()
 #
+#     def __str__(self):
+#         return self.game_word
+#
 #
 # class PracticeProgress(models.Model):
 #     player = models.ForeignKey(UserManager, on_delete=models.PROTECT)
 #     progress = models.CommaSeparatedIntegerField()
 #
+#     @staticmethod
+#     def progress_game(user):
+#         playing_user = Wordbook.objects.filter(user_id=user)
+#         return playing_user
+#
 #
 # @python_2_unicode_compatible
 # class Question(models.Model):
-#     quiz = models.ManyToManyField(Wordbook,
-#                                   verbose_name='Quiz',
-#                                   blank=True)
+#     quiz = models.ManyToManyField(Practice, blank=True)
 
+
+class PracticeQuiz(models.Model):
+    game_word = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
+
+    def __unicode__(self):
+        return self.game_word
+
+
+class Answer(models.Model):
+    game_word = models.ForeignKey(PracticeQuiz, on_delete=models.PROTECT)
+    answer = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
+    correct = models.BooleanField(default=False)
+
+    def is_correct(self):
+        return self.correct
+
+    def __unicode__(self):
+        return self.game_word
+
+
+class History(models.Model):
+    played_by = models.ForeignKey(UserManager, on_delete=models.PROTECT)
+    correct = models.ForeignKey(Answer, on_delete=models.PROTECT)
+    trials = models.PositiveIntegerField(blank=False)
+    understanding_level = models.PositiveIntegerField(default=0)
+
+    def count_trials(self, user):
+        if self.played_by == user:
+            self.trials += 1
+        return self.played_by
+
+    def increment_understanding_level(self, user):
+        if not self.correct:
+
+
+    def __unicode__(self):
+        return self.played_by
