@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block meta_title %}
-    SELVOC
+    SELVOC/HOME
 {% endblock %}
 {% block content %}
 {% load static %}
@@ -44,7 +44,7 @@
                 </tr>
              </thead>
             <tbody>
-                {% for entry in show_list2 %}
+                {% for entry in queryset %}
                 <tr>
                     <td>{{ entry.vocab }}</td>
                     <td>{{ entry.vocab_class }}</td>
@@ -61,8 +61,10 @@
             </table>
                 {% include 'wordbook/paginate.html' %}
 {#                   {% include 'wordbook/word_add.html' %}#}
+
+
 <div style="width: 200px; z-index: 10; position: fixed; right: 4%; bottom: 13%; height: 83px;">
-    <a class="btn" href="{% url 'wordbook:add_word' %}">
+   <a class="btn" href="{% url 'wordbook:add_word' %}">
         <i class="fa fa-plus" style="font-size:150px;color:rgb(251,244,255)"></i></a>
 </div>
     </form>

@@ -10,20 +10,34 @@ from django.urls import reverse_lazy
 from .forms import WordAddForm
 from .models import Wordbook, Word
 
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
 
 class HomeView(LoginRequiredMixin, generic.ListView):
     model = Wordbook
-    paginate_by = 5
+    paginate_by = 12
     template_name = 'wordbook/home.html'
 
     def get(self, request, *args, **kwargs):
+        queryset_list = Wordbook.exec_query(request.user.pk)
+        paginator = Paginator(queryset_list, self.paginate_by)
+
+        page = self.request.GET.get('page')
+
+        # try:
+        # queryset = paginator.page(page)
+        queryset = paginator.get_page(page)
+        # except PageNotAnInteger:
+        #     queryset = paginator.page(1)
+        # except EmptyPage:
+        #     queryset = paginator.page(paginator.num_pages)
         # show_list = Wordbook.exec_query(request.user.pk)
         # show_list = Word.objects.filter(wordbook__user_id=request.user)
-        show_list2 = Wordbook.exec_query(request.user.pk)
+
         # a = Wordbook.objects.filter(word__wordbook__user_id=request.user)
         context = {
             # 'show_list': show_list,
-            'show_list2': show_list2,
+            'queryset': queryset,
         }
         return render(request, 'wordbook/home.html', context)
 

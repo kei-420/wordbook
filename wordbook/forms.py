@@ -14,17 +14,17 @@ class WordAddForm(forms.ModelForm):
 
     def clean_adding_word(self):
         adding_word = self.cleaned_data['adding_word']
-        reverse_search_word = Word.objects.filter(vocab_meaning__contains=adding_word)
-        if reverse_search_word.exists():
-            for entry in reverse_search_word:
-                adding_word = entry
-        else:
-            raise forms.ValidationError('入力された日本語に該当する英単語は存在しません。')
+        # reverse_search_word = Word.objects.filter(vocab_meaning__contains=adding_word)
         if not Word.objects.filter(vocab=adding_word):
             raise forms.ValidationError('入力された単語は存在しません。\n'
                                         'スペル等を確認して下さい。')
         if Wordbook.objects.filter(adding_word=adding_word, user_id=self._user).exists():
             raise forms.ValidationError('入力された単語は既に単語帳内に存在しています。')
+        # if reverse_search_word.exists():
+        #     for entry in reverse_search_word:
+        #         adding_word = entry
+        # else:
+        #     raise forms.ValidationError('入力された日本語に該当する英単語は存在しません。')
         return adding_word
 
     def save(self, commit=True):

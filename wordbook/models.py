@@ -1,7 +1,15 @@
+import json
+import numpy as np
+
+import random
+
 from django.db import models
 from accounts.models import UserManager
 from django.db import connection
 from django.utils.encoding import python_2_unicode_compatible
+
+from django.core.exceptions import ValidationError, ImproperlyConfigured
+from model_utils.managers import InheritanceManager
 
 
 class Word(models.Model):
@@ -25,24 +33,12 @@ class Wordbook(models.Model):
     word = models.ForeignKey(Word, on_delete=models.PROTECT)
     # word_meaning = models.ForeignKey(WordMeanings, on_delete=models.PROTECT)
     adding_word = models.CharField(max_length=255)
+    understanding_level = models.PositiveIntegerField(blank=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.adding_word
 
-    # @staticmethod
-    # def exec_query(user):
-    #     with connection.cursor() as cur:
-    #         sqltext = """
-    #                 SELECT vocab, vocab_class, vocab_meaning, wordbook.id FROM word
-    #                 INNER JOIN wordbook ON word.id = wordbook.word_id
-    #                 INNER JOIN word_meanings ON word.wordid = word_meanings.wordid
-    #                 WHERE word_meanings.lang='jpn' and wordbook.user_id=%s
-    #                 """ % user
-    #         cur.execute(sqltext)
-    #         columns = [col[0] for col in cur.description]
-    #         show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
-    #         return show_list
     @staticmethod
     def exec_query(user):
         with connection.cursor() as cur:
@@ -55,92 +51,78 @@ class Wordbook(models.Model):
             columns = [col[0] for col in cur.description]
             show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
             return show_list
-# class Practice(models.Model):
-#     class Meta:
-#         db_table = 'practice'
+
+
+# class GameListManager(models.Manager):
+#     def create_question_list(self, user):
+#         user_word_data = Wordbook.objects.filter(user=user)
+#         is_randomly_selected = np.random.choice(list(user_word_data.values('word__vocab', 'word__vocab_meaning')),
+#                                                 user_word_data.count(), replace=False
+#                                                 )
+#         for i in list(is_randomly_selected):
+#             is_game_word = i['word__vocab']
+#             is_answer = i['word__vocab_meaning']
+#             choices = Word.objects.exclude(vocab_meaning=is_answer).values('vocab_meaning')
+#             three_other_choices = np.random.choice(list(choices), 3, replace=False)
+#             appended_choices = list(three_other_choices).append(is_answer)
+#             random.shuffle(appended_choices)
+#             question_list = self.create(user=user,
+#                                         game_word=is_game_word,
+#                                         choices=appended_choices,
+#                                         answer=is_answer,
+#                                         )
+#             return question_list
+
+
+# class PracticeGameManager(models.Manager):
+#     def new_game(self, user, game):
+#         question_set = game.gameword_set.all().select_subclasses
+#         question_set = [item.id for item in question_set]
+#         if len(question_set) == 0:
+#             raise ImproperlyConfigured('Question set is empty. '
+#                                        'Please make sure that you have at least one word in your wordbook.')
+#         questions = ",".join(map(str, question_set)) + ","
+#         new_game = self.create(user=user,
+#                                game=game,
+#                                question_order=questions,
+#                                question_list=questions,
+#                                incorrect_questions="",
+#                                score=0,
+#                                user_answers='{}',
+#                                )
+#         return new_game
 #
+#     def user_progress(self, user, game):
+#         if self.filter(user=user, game=game):
+#             return False
+#         try:
+#             progress = self.get(user=user, game=game)
+#         except PracticeGame.DoesNotExist:
+#             progress = self.new_game(user, game)
+#         except PracticeGame.MultipleObjectsReturned:
+#             progress = self.filter(user=user, game=game)
+#         return progress
+#
+#
+# class PracticeGame(models.Model):
 #     user = models.ForeignKey(UserManager, on_delete=models.PROTECT)
-#     trial = models.IntegerField()
+#     question_order = models.CommaSeparatedIntegerField(max_length=1024)
+#     question_list = models.CommaSeparatedIntegerField(max_length=1024)
+#     incorrect_questions = models.CommaSeparatedIntegerField(max_length=1024)
+#     score = models.IntegerField()
+#     user_answers = models.TextField(blank=True, default='{}')
+#     objects = PracticeGameManager()
 #
-#     def __init__(s    elf, trial):
-#         super(Practice, self).__init__(trial)
-#         self.trial = trial
+#     def get_questions(self):
+#         return self.gameword_set.all().select_subclasses
 #
-#     def increment_trials(self, user):
-#         if user:
-#             self.trial += 1
-#
-#
-# class Choices(models.Model):
-#     game_word = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
-#     choice = models.C
-#     class Meta:
-#         db_table = 'choices'
-#         unique_together = [
-#
-#         ]
-
-
-# class Practice(models.Model):
-#     game_word = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
-#     # player = models.ForeignKey(UserManager, on_delete=models.PROTECT)
-#     random_order = models.BooleanField(blank=False, default=False)
-#     num_of_answered_questions = models.PositiveIntegerField(blank=True, null=True)
-#     answers_at_end = models.BooleanField(blank=False, default=True)
-#     game_trials = models.PositiveIntegerField()
-#
-#     def __str__(self):
-#         return self.game_word
+#     @property
+#     def get_max_score(self):
+#         return self.get_questions().count()
 #
 #
-# class PracticeProgress(models.Model):
-#     player = models.ForeignKey(UserManager, on_delete=models.PROTECT)
-#     progress = models.CommaSeparatedIntegerField()
+# class GameWord(models.Model):
+#     gameword = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
+#     practice_game = models.ManyToManyField(PracticeGame, blank=True)
 #
-#     @staticmethod
-#     def progress_game(user):
-#         playing_user = Wordbook.objects.filter(user_id=user)
-#         return playing_user
-#
-#
-# @python_2_unicode_compatible
-# class Question(models.Model):
-#     quiz = models.ManyToManyField(Practice, blank=True)
-
-
-class PracticeQuiz(models.Model):
-    game_word = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
-
-    def __unicode__(self):
-        return self.game_word
-
-
-class Answer(models.Model):
-    game_word = models.ForeignKey(PracticeQuiz, on_delete=models.PROTECT)
-    answer = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
-    correct = models.BooleanField(default=False)
-
-    def is_correct(self):
-        return self.correct
-
-    def __unicode__(self):
-        return self.game_word
-
-
-class History(models.Model):
-    played_by = models.ForeignKey(UserManager, on_delete=models.PROTECT)
-    correct = models.ForeignKey(Answer, on_delete=models.PROTECT)
-    trials = models.PositiveIntegerField(blank=False)
-    understanding_level = models.PositiveIntegerField(default=0)
-
-    def count_trials(self, user):
-        if self.played_by == user:
-            self.trials += 1
-        return self.played_by
-
-    def increment_understanding_level(self, user):
-        if not self.correct:
-
-
-    def __unicode__(self):
-        return self.played_by
+#     objects = InheritanceManager()
