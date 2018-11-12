@@ -1,5 +1,5 @@
 from django import forms
-from .models import Wordbook, Word
+from .models import Wordbook, Word, PracticeGameContext
 
 
 class WordAddForm(forms.ModelForm):
@@ -38,3 +38,25 @@ class WordAddForm(forms.ModelForm):
         if commit:
             word_info.save()
         return word_info
+
+
+# class PracticeGameForm(forms.ModelForm):
+#     class Meta:
+#         model = PracticeGameContext
+#         fields = ('title', )
+#
+#     def __int__(self, *args, **kwargs):
+#         self._user = kwargs.pop('user')
+#         super(PracticeGameForm, self).__int__(*args, **kwargs)
+#         self.fields['title'].widget.attrs = {'placeholder': '反復練習タイトル'}
+#
+#     def clean_title(self):
+#         title = self.cleaned_data['title']
+#         return title
+#
+#     def save(self, commit=True):
+#         new_game = super(PracticeGameForm, self).save(commit=False)
+#         new_game.user = self._user
+#         if commit:
+#             new_game.save()
+#         return new_game

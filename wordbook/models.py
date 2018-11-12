@@ -50,79 +50,49 @@ class Wordbook(models.Model):
             cur.execute(sqltext)
             columns = [col[0] for col in cur.description]
             show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
-            return show_list
 
 
-# class GameListManager(models.Manager):
-#     def create_question_list(self, user):
-#         user_word_data = Wordbook.objects.filter(user=user)
-#         is_randomly_selected = np.random.choice(list(user_word_data.values('word__vocab', 'word__vocab_meaning')),
-#                                                 user_word_data.count(), replace=False
-#                                                 )
-#         for i in list(is_randomly_selected):
-#             is_game_word = i['word__vocab']
-#             is_answer = i['word__vocab_meaning']
-#             choices = Word.objects.exclude(vocab_meaning=is_answer).values('vocab_meaning')
-#             three_other_choices = np.random.choice(list(choices), 3, replace=False)
-#             appended_choices = list(three_other_choices).append(is_answer)
-#             random.shuffle(appended_choices)
-#             question_list = self.create(user=user,
-#                                         game_word=is_game_word,
-#                                         choices=appended_choices,
-#                                         answer=is_answer,
-#                                         )
-#             return question_list
+class PracticeGameContext(models.Model):
+    user = models.ForeignKey(UserManager, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
-# class PracticeGameManager(models.Manager):
-#     def new_game(self, user, game):
-#         question_set = game.gameword_set.all().select_subclasses
-#         question_set = [item.id for item in question_set]
-#         if len(question_set) == 0:
-#             raise ImproperlyConfigured('Question set is empty. '
-#                                        'Please make sure that you have at least one word in your wordbook.')
-#         questions = ",".join(map(str, question_set)) + ","
-#         new_game = self.create(user=user,
-#                                game=game,
-#                                question_order=questions,
-#                                question_list=questions,
-#                                incorrect_questions="",
-#                                score=0,
-#                                user_answers='{}',
-#                                )
-#         return new_game
-#
-#     def user_progress(self, user, game):
-#         if self.filter(user=user, game=game):
-#             return False
-#         try:
-#             progress = self.get(user=user, game=game)
-#         except PracticeGame.DoesNotExist:
-#             progress = self.new_game(user, game)
-#         except PracticeGame.MultipleObjectsReturned:
-#             progress = self.filter(user=user, game=game)
-#         return progress
-#
-#
-# class PracticeGame(models.Model):
-#     user = models.ForeignKey(UserManager, on_delete=models.PROTECT)
-#     question_order = models.CommaSeparatedIntegerField(max_length=1024)
-#     question_list = models.CommaSeparatedIntegerField(max_length=1024)
-#     incorrect_questions = models.CommaSeparatedIntegerField(max_length=1024)
-#     score = models.IntegerField()
-#     user_answers = models.TextField(blank=True, default='{}')
-#     objects = PracticeGameManager()
-#
-#     def get_questions(self):
-#         return self.gameword_set.all().select_subclasses
-#
-#     @property
-#     def get_max_score(self):
-#         return self.get_questions().count()
-#
-#
-# class GameWord(models.Model):
-#     gameword = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
-#     practice_game = models.ManyToManyField(PracticeGame, blank=True)
-#
-#     objects = InheritanceManager()
+class Question(models.Model):
+    wordbook = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
+    practice_game = models.ForeignKey(PracticeGameContext, on_delete=models.PROTECT)
+    was_correct = models.BooleanField(default=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class MultipleChoices(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.PROTECT)
+    word = models.ForeignKey(Word, on_delete=models.PROTECT)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

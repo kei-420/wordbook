@@ -46,6 +46,7 @@
             <tbody>
                 {% for entry in queryset %}
                 <tr>
+
                     <td>{{ entry.vocab }}</td>
                     <td>{{ entry.vocab_class }}</td>
                     <td>{{ entry.vocab_meaning }}</td>
@@ -56,7 +57,7 @@
                         </form>
                     </td>
 	        	</tr>
-                {% endfor %}
+                        {% endfor %}
             </tbody>
             </table>
                 {% include 'wordbook/paginate.html' %}
