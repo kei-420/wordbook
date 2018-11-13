@@ -50,6 +50,7 @@ class Wordbook(models.Model):
             cur.execute(sqltext)
             columns = [col[0] for col in cur.description]
             show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
+            return show_list
 
 
 class PracticeGameContext(models.Model):
@@ -68,9 +69,32 @@ class MultipleChoices(models.Model):
     question = models.ForeignKey(Question, on_delete=models.PROTECT)
     word = models.ForeignKey(Word, on_delete=models.PROTECT)
 
+    @staticmethod
+    def exec_query(question_id):
+        with connection.cursor() as cur:
+            sqltext = """
+            SELECT word.vocab_meaning, wordbook_multiplechoices.question_id
+            FROM word INNER JOIN wordbook_multiplechoices ON word.id=wordbook_multiplechoices.word_id
+            WHERE question_id = %s
+            """ % question_id
+            cur.execute(sqltext)
+            columns = [col[0] for col in cur.description]
+            show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
+            return show_list
 
-
-
+    @staticmethod
+    def exec_query2(question_id):
+        with connection.cursor() as cur:
+            sqltext = """
+            select wordbook.word_id 
+            from wordbook inner join wordbook_question 
+            on wordbook.id = wordbook_question.wordbook_id
+            where wordbook_question.id = %s
+            """ % question_id
+            cur.execute(sqltext)
+            columns = [col[0] for col in cur.description]
+            show_list = [dict(zip(columns, row)) for row in cur.fetchall()]
+            return show_list
 
 
 

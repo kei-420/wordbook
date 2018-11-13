@@ -41,24 +41,25 @@
 {#        {% endfor %}#}
             </tr>
     </table>
+    {% for entry in shown_list %}
     <form action="cgi-bin/formmail.cgi" method="post">{% csrf_token %}
         <div align="center">
         <div class="block" align="left">
-        <label><input type="radio" name="blood" value="a">{{ choice1 }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
         </div>
          <div class="block" align="right">
-        <label><input type="radio" name="blood" value="a">{{ choice2 }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
         </div>
          <div class="block" align="left">
-        <label><input type="radio" name="blood" value="a">{{ choice3 }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
         </div>
          <div class="block" align="right">
-        <label><input type="radio" name="blood" value="a">{{ choice4 }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
         </div>
         <button class="btn btn-primary" type="submit">決定</button>
         </div>
     </form>
-
+{% endfor %}
     <a class="btn btn-primary" href="{% url 'wordbook:home' %}">戻る</a>
 </form>
     </body>

@@ -40,6 +40,12 @@ class WordAddForm(forms.ModelForm):
         return word_info
 
 
+# class PracticeGameForm(forms.Form):
+#     def __init__(self, *args, **kwargs):
+#         super(PracticeGameForm, self).__init__(*args, **kwargs)
+#         self.fields['choices'].widget.attrs = forms.ChoiceField()
+
+
 # class PracticeGameForm(forms.ModelForm):
 #     class Meta:
 #         model = PracticeGameContext

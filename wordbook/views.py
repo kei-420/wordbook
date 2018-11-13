@@ -25,22 +25,15 @@ class HomeView(LoginRequiredMixin, generic.ListView):
 
         page = self.request.GET.get('page')
 
+        queryset = paginator.get_page(page)
         # try:
         # queryset = paginator.page(page)
-        queryset = paginator.get_page(page)
-
         # except PageNotAnInteger:
         #     queryset = paginator.page(1)
         # except EmptyPage:
         #     queryset = paginator.page(paginator.num_pages)
-        # show_list = Wordbook.exec_query(request.user.pk)
-        # show_list = Word.objects.filter(wordbook__user_id=request.user)
-
-        # a = Wordbook.objects.filter(word__wordbook__user_id=request.user)
         context = {
-            # 'show_list': show_list,
             'queryset': queryset,
-
         }
         return render(request, 'wordbook/home.html', context)
 
@@ -120,8 +113,6 @@ class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
         for l in [list_for_multiple_choices[i:i + group_by] for i in range(0, len(list_for_multiple_choices), group_by)]:
             list_divided_by_3.append(l)
 
-
-
         # practice_game_idで絞り込んだ、Questionの id 取得
         question_ids = Question.objects.filter(
             practice_game_id=latest_game_record['pk']).values('pk')
@@ -130,51 +121,62 @@ class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
         for q in question_ids:
             list_for_question_ids.append(q['pk'])
 
-        for l in list_for_multiple_choices:
-            for q in list_for_question_ids:
+        # 先に保存した各question_idそれぞれに対応する3つの選択問題の取得（word_id)
+        for l in list_for_question_ids:
+            for n in range(0, 3):
+                MultipleChoices(question_id=l, word_id=list_divided_by_3[l-1][n]).save()
 
+        # 保存した選択問題の取得
+        list_for_get_shown_multiple_choices_data = []
+        for l in list_for_question_ids:
+            get_shown_multiple_choices_data = MultipleChoices.objects.filter(question_id=l).values('word_id')
+            list_for_get_shown_multiple_choices_data.append(get_shown_multiple_choices_data)
 
+        list_for_after_loop = []
+        for n in range(0, len(list_for_get_shown_multiple_choices_data)):
+            for m in range(0, 3):
+                list_for_after_loop.append(list_for_get_shown_multiple_choices_data[n][m]['word_id'])
 
+        group_by = 3
+        list_divided_by_3_shown = []
+        for l in [list_for_after_loop[i:i + group_by] for i in
+                  range(0, len(list_for_after_loop), group_by)]:
+            list_divided_by_3_shown.append(l)
 
+        list_for_exec_query2 = []
+        for l in list_for_question_ids:
+            list_for_exec_query2.append(MultipleChoices.exec_query2(l))
 
+        list_for_slicing = []
+        for l in list_for_exec_query2:
+            list_for_slicing.append(l[0]['word_id'])
 
+        list_for_zip = []
+        for l1, l2 in zip(list_divided_by_3_shown, list_for_slicing):
+            list_for_zip.append(l1 + [l2])
 
+        list_for_vocab_meanings = []
+        for n in range(0,len(list_for_zip)):
+            for l in list_for_zip[n]:
+                get_vocab_meanings = Word.objects.filter(pk=l).values('vocab_meaning')
+                list_for_vocab_meanings.append(get_vocab_meanings)
 
+        group_by2 = 4
+        shown_list = []
+        for l in [list_for_vocab_meanings[i:i + group_by2] for i in
+                  range(0, len(list_for_vocab_meanings), group_by2)]:
+            shown_list.append(l)
 
-
-        # ids_randomly_selected = np.random.choice(
-        #     list(user_wordbook_data.values('word__pk')),
-        #     10,
-        #     replace=False,
-        # )
-        # list_for_ids_randomly_selected = []
-        # for j in ids_randomly_selected:
-        #     is_word_id = j['word__pk']
-        #     list_for_ids_randomly_selected.append(is_word_id)
-        #
-        # list_for_random_choices = []
-        # for l in list_for_ids_randomly_selected:
-        #     choices = Word.objects.exclude(pk=l).values('pk')
-        #     random_choices = np.random.choice(list(choices), 3, replace=False)
-        #     list_for_random_choices.append(random_choices)
-        #
-        # list_for_multiple_choices = []
-        # for n in range(0, 10):
-        #     for l in list_for_random_choices[n]:
-        #         list_for_multiple_choices.append(l['pk'])
-
-
-
+        context = {
+                'shown_list': shown_list[n],
+        }
+        render(request, 'wordbook/repeated_game.html', context)
         # forを抜けた後用に空のリストを用意。
 
         #     # if not Question.objects.filter(wordbook=i.pk).exists():
         #     each_user_wordbook_data = Wordbook.objects.get(pk=i.pk)
         #     create_questions = Question(wordbook=each_user_wordbook_data)
         #     create_questions.save()
-
-
-
-
 
     # def get(self, request, *args, **kwargs):
     #     global is_game_word, is_answer
@@ -222,6 +224,12 @@ class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
     #         'choice4': choice4,
     #     }
     #     return render(request, 'wordbook/repeated_game.html', context)
+    #
+    #     # def post(self, request, *args, **kwargs):
+    #     #     if request.method == 'POST':
+    #     #         for n in range(0, 4):
+    #     #             if request
+
 
 
 
