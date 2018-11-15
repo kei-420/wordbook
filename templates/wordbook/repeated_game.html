@@ -45,13 +45,13 @@
     <form action="cgi-bin/formmail.cgi" method="post">{% csrf_token %}
         <div align="center">
         <div class="block" align="left">
-        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry.vocab_meaning }}</label>
         </div>
          <div class="block" align="right">
-        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry.vocab_meaning }}</label>
         </div>
          <div class="block" align="left">
-        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry.vocab_meaning }}</label>
         </div>
          <div class="block" align="right">
         <label><input type="radio" name="blood" value="a">{{ entry }}</label>

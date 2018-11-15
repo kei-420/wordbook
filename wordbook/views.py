@@ -64,7 +64,18 @@ class WordDeleteView(generic.DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
+class RepeatedGameView(LoginRequiredMixin, generic.FormView):
+    # form_class = PracticeGameForm
+    # template_name = 'wordbook/repeated_game.html'
+    #
+    # def post(self, request, *args, **kwargs):
+    #     form = PracticeGameForm(request.POST)
+    #     if not form.is_valid():
+    #         return render(request, 'wordbook/repeated_game.html', {'form': form})
+    #     # form.save(commit=True)
+    #     form.save(commit=True)
+    #     return redirect('wordbook:home')
+
     def get(self, request, *args, **kwargs):
         user_info = UserManager.objects.get(username=request.user)          # ユーザー情報の取得
 
@@ -121,10 +132,13 @@ class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
         for q in question_ids:
             list_for_question_ids.append(q['pk'])
 
-        # 先に保存した各question_idそれぞれに対応する3つの選択問題の取得（word_id)
-        for l in list_for_question_ids:
-            for n in range(0, 3):
-                MultipleChoices(question_id=l, word_id=list_divided_by_3[l-1][n]).save()
+        # 作成したquestion_idそれぞれに対応するword_idを明確にする為の辞書（combined_dict）を作成
+        combined_dict = dict(zip(list_for_question_ids, list_divided_by_3))
+
+        # combined_dictからMultipleChoicesテーブルへ保存
+        for cd in combined_dict:
+                for n in range(0, 3):
+                    MultipleChoices(question_id=cd, word_id=combined_dict[cd][n]).save()
 
         # 保存した選択問題の取得
         list_for_get_shown_multiple_choices_data = []
@@ -137,10 +151,14 @@ class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
             for m in range(0, 3):
                 list_for_after_loop.append(list_for_get_shown_multiple_choices_data[n][m]['word_id'])
 
+        list_for_its_loop = []
+        for n in range(0, len(list_for_after_loop)):
+            list_for_its_loop.append(list_for_after_loop[n]['word_id'])
+
         group_by = 3
         list_divided_by_3_shown = []
-        for l in [list_for_after_loop[i:i + group_by] for i in
-                  range(0, len(list_for_after_loop), group_by)]:
+        for l in [list_for_its_loop[i:i + group_by] for i in
+                  range(0, len(list_for_its_loop), group_by)]:
             list_divided_by_3_shown.append(l)
 
         list_for_exec_query2 = []
@@ -168,9 +186,14 @@ class RepeatedGameView(LoginRequiredMixin, generic.TemplateView):
             shown_list.append(l)
 
         context = {
-                'shown_list': shown_list[n],
+                'shown_list': shown_list,
         }
         render(request, 'wordbook/repeated_game.html', context)
+
+    # def get_form_kwargs(self):
+    #     kwargs = super(RepeatedGameView, self).get_form_kwargs()
+    #     kwargs['user'] = self.request.user
+    #     return kwargs
         # forを抜けた後用に空のリストを用意。
 
         #     # if not Question.objects.filter(wordbook=i.pk).exists():
