@@ -1,4 +1,4 @@
-Internal Server Error: /selvoc/wordbook/home/add_word
+Internal Server Error: /selvoc/wordbook/home/repeated_game/
 Traceback (most recent call last):
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
     response = get_response(request)
@@ -10,16 +10,13 @@ Traceback (most recent call last):
     return func(*args, **kwds)
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/base.py", line 68, in view
     return self.dispatch(request, *args, **kwargs)
+  File "/Users/kei./Desktop/Django/wordbook/wordbook/views.py", line 194, in dispatch
+    return super(RepeatedGameView, self).dispatch(request, *args, **kwargs)
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/contrib/auth/mixins.py", line 52, in dispatch
     return super().dispatch(request, *args, **kwargs)
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/base.py", line 88, in dispatch
     return handler(request, *args, **kwargs)
-  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/edit.py", line 133, in get
-    return self.render_to_response(self.get_context_data())
-  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/edit.py", line 66, in get_context_data
-    kwargs['form'] = self.get_form()
-  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/edit.py", line 33, in get_form
-    return form_class(**self.get_form_kwargs())
-  File "/Users/kei./Desktop/Django/wordbook/wordbook/forms.py", line 11, in __init__
-    super(WordAddForm, self).__init__(*args, **kwargs)
-TypeError: __init__() got an unexpected keyword argument 'user'
+  File "/Users/kei./Desktop/Django/wordbook/wordbook/views.py", line 156, in get
+    list_for_its_loop.append(list_for_after_loop[n]['word_id'])
+TypeError: 'int' object is not subscriptable
+[15/Nov/2018 20:07:54] "GET /selvoc/wordbook/home/repeated_game/ HTTP/1.1" 500 103281

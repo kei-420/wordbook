@@ -1,5 +1,7 @@
 from django import forms
-from .models import Wordbook, Word, PracticeGameContext, Question, MultipleChoices
+from .models import Wordbook, Word, PracticeGameContext, Question, MultipleChoices, PracticeGame
+from django.forms.widgets import RadioSelect, Textarea
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
 class WordAddForm(forms.ModelForm):
@@ -29,6 +31,62 @@ class WordAddForm(forms.ModelForm):
         if commit:
             word_info.save()
         return word_info
+
+
+# class PracticeGameAddForm(forms.ModelForm):
+#     class Meta:
+#         model = PracticeGame
+#         fields = ('title',)
+#
+#     def __init__(self, *args, **kwargs):
+#         super(PracticeGameAddForm, self).__init__(*args, **kwargs)
+#         self.fields['title'].widget.attrs = {'placeholder': 'タイトル'}
+#
+#     def clean_title(self):
+#         title = self.cleaned_data['title']
+#         return title
+
+# class PracticeGameAdminForm(forms.ModelForm):
+#     """
+#     below is from
+#     http://stackoverflow.com/questions/11657682/
+#     django-admin-interface-using-horizontal-filter-with-
+#     inline-manytomany-field
+#     """
+#
+#     class Meta:
+#         model = PracticeGame
+#         exclude = []
+#
+#     questions = forms.ModelMultipleChoiceField(
+#         queryset=Question.objects.all(),
+#         required=False,
+#         label='Questions',
+#         widget=FilteredSelectMultiple(
+#             verbose_name='Questions',
+#             is_stacked=False,
+#         )
+#     )
+#
+#     def __init__(self, *args, **kwargs):
+#         super(PracticeGameAdminForm, self).__init__(*args, **kwargs)
+#         if self.instance.pk:
+#             self.fields['questions'].initial =\
+#                 self.instance.question_set.all().select_subclasses()
+#
+#     def save(self, commit=True):
+#         game = super(PracticeGameAdminForm, self).save(commit=False)
+#         game.question_set = self.cleaned_data['questions']
+#         self.save_m2m()
+#         return game
+
+
+class QuestionForm(forms.Form):
+    def __init__(self, question, *args, **kwargs):
+        super(QuestionForm, self).__init__(*args, **kwargs)
+        choice_list = [x for x in question.get_answers_list()]
+        self.fields["answers"] = forms.ChoiceField(choices=choice_list,
+                                                   widget=RadioSelect)
 
 
 # TEST_CHOICES = [

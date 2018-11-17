@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {% load static %}
@@ -42,7 +43,7 @@
             </tr>
     </table>
     {% for entry in shown_list %}
-    <form action="cgi-bin/formmail.cgi" method="post">{% csrf_token %}
+    <form action="cgi-bin/formmail.cgi" method="get">{% csrf_token %}
         <div align="center">
         <div class="block" align="left">
         <label><input type="radio" name="blood" value="a">{{ entry.vocab_meaning }}</label>
@@ -54,7 +55,7 @@
         <label><input type="radio" name="blood" value="a">{{ entry.vocab_meaning }}</label>
         </div>
          <div class="block" align="right">
-        <label><input type="radio" name="blood" value="a">{{ entry }}</label>
+        <label><input type="radio" name="blood" value="a">{{ entry.vocab_meaning }}</label>
         </div>
         <button class="btn btn-primary" type="submit">決定</button>
         </div>

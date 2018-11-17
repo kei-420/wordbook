@@ -1,15 +1,18 @@
 import numpy as np
-import random
+import re
+from datetime import datetime
 
-from django.shortcuts import render, redirect
+
+from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponse, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views import View, generic
 from django.urls import reverse_lazy
 
 from .forms import WordAddForm
-from .models import Wordbook, Word, PracticeGameContext, Question, MultipleChoices
+from .models import Wordbook, Word, PracticeGameContext, Question, MultipleChoices, PracticeGame
 from accounts.models import UserManager
+from .utils import id_generator, unique_slug_generator
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
@@ -64,18 +67,62 @@ class WordDeleteView(generic.DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-class RepeatedGameView(LoginRequiredMixin, generic.FormView):
-    # form_class = PracticeGameForm
-    # template_name = 'wordbook/repeated_game.html'
-    #
-    # def post(self, request, *args, **kwargs):
-    #     form = PracticeGameForm(request.POST)
-    #     if not form.is_valid():
-    #         return render(request, 'wordbook/repeated_game.html', {'form': form})
-    #     # form.save(commit=True)
-    #     form.save(commit=True)
-    #     return redirect('wordbook:home')
+class PracticeGameAddView(LoginRequiredMixin, generic.CreateView):
+    model = PracticeGame
+    success_url = reverse_lazy('wordbook:home')
 
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        user_info = UserManager.objects.get(username=request.user)
+        pattern = re.compile(r' ()([0-9]{2}):([0-9]{2}):([0-9]{2}).[0-9]{1,6}')
+        to_set_title = datetime.now()
+        eng_date = re.sub(pattern, r'\1-\2-\3-\4', str(to_set_title))
+        split_date = eng_date.split('-')
+        joining_as_jap_date = '{0}年{1}月{2}日 {3}:{4}:{5}'\
+            .format(split_date[0], split_date[1], split_date[2], split_date[3], split_date[4], split_date[5])
+        count = PracticeGame.objects.filter(user_id=user_info.pk).count() + 1
+        title = "{0}回目の{1}'s練習｜{2}".format(count, user_info.username, joining_as_jap_date)
+        example_url = id_generator()
+        PracticeGame(user_id=user_info.pk, title=title, url=example_url).save()
+
+        return redirect(reverse('wordbook:game_list'))
+
+
+class PracticeGameListView(LoginRequiredMixin, generic.ListView):
+    model = PracticeGame
+    paginate_by = 10
+    template_name = 'wordbook/practicegame_list.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset_list = PracticeGame.objects.filter(user_id=request.user.pk, draft=False)
+        paginator = Paginator(queryset_list, self.paginate_by)
+        page = self.request.GET.get('page')
+        queryset = paginator.get_page(page)
+        context = {
+            'queryset': queryset,
+        }
+        return render(request, 'wordbook/practicegame_list.html', context)
+
+
+class PracticeGameDetailView(LoginRequiredMixin, generic.DetailView):
+    model = PracticeGame
+    slug_field = 'url'
+
+
+class PracticeGamePlayView(LoginRequiredMixin, View):
+    #     # form_class = PracticeGameForm
+    #     # template_name = 'wordbook/repeated_game.html'
+    #     #
+    #     # def post(self, request, *args, **kwargs):
+    #     #     form = PracticeGameForm(request.POST)
+    #     #     if not form.is_valid():
+    #     #         return render(request, 'wordbook/repeated_game.html', {'form': form})
+    #     #     # form.save(commit=True)
+    #     #     form.save(commit=True)
+    #     #     return redirect('wordbook:home')
+    #
     def get(self, request, *args, **kwargs):
         user_info = UserManager.objects.get(username=request.user)          # ユーザー情報の取得
 
@@ -153,7 +200,7 @@ class RepeatedGameView(LoginRequiredMixin, generic.FormView):
 
         list_for_its_loop = []
         for n in range(0, len(list_for_after_loop)):
-            list_for_its_loop.append(list_for_after_loop[n]['word_id'])
+            list_for_its_loop.append(list_for_after_loop[n])
 
         group_by = 3
         list_divided_by_3_shown = []
@@ -189,6 +236,7 @@ class RepeatedGameView(LoginRequiredMixin, generic.FormView):
                 'shown_list': shown_list,
         }
         render(request, 'wordbook/repeated_game.html', context)
+
 
     # def get_form_kwargs(self):
     #     kwargs = super(RepeatedGameView, self).get_form_kwargs()
