@@ -3,13 +3,13 @@ import re
 from datetime import datetime
 
 
-from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponse, reverse
+from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponse, reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views import View, generic
 from django.urls import reverse_lazy
 
-from .forms import WordAddForm
+from .forms import WordAddForm, QuestionForm
 from .models import Wordbook, Word, PracticeGameContext, Question, MultipleChoices, PracticeGame
 from accounts.models import UserManager
 from .utils import id_generator, unique_slug_generator
@@ -83,9 +83,12 @@ class PracticeGameAddView(LoginRequiredMixin, generic.CreateView):
         joining_as_jap_date = '{0}年{1}月{2}日 {3}:{4}:{5}'\
             .format(split_date[0], split_date[1], split_date[2], split_date[3], split_date[4], split_date[5])
         count = PracticeGame.objects.filter(user_id=user_info.pk).count() + 1
-        title = "{0}回目の{1}'s練習｜{2}".format(count, user_info.username, joining_as_jap_date)
-        example_url = id_generator()
-        PracticeGame(user_id=user_info.pk, title=title, url=example_url).save()
+        title = "{0}回目の{1}'s単語クイズ｜{2}".format(count, user_info.username, joining_as_jap_date)
+        # example_url = id_generator()
+        to_get_url = re.sub('\s+', '-', title).lower()
+        url = ''.join(letter for letter in to_get_url if letter.isalnum() or letter == '-')
+
+        PracticeGame(user_id=user_info.pk, title=title, url=url).save()
 
         return redirect(reverse('wordbook:game_list'))
 
@@ -106,12 +109,34 @@ class PracticeGameListView(LoginRequiredMixin, generic.ListView):
         return render(request, 'wordbook/practicegame_list.html', context)
 
 
+# class PracticeGameResetView(LoginRequiredMixin, generic.DeleteView):
+#     model = PracticeGame
+#     success_url = reverse_lazy('wordbook:home')
+#
+#     # def get(self, request, *args, **kwargs):
+#     #     return self.post(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         game_data = PracticeGame.objects.all().filter(user_id=request.user.pk)
+#         game_data.delete()
+
+
 class PracticeGameDetailView(LoginRequiredMixin, generic.DetailView):
     model = PracticeGame
     slug_field = 'url'
 
+    # def get(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     if self.object.draft:
+    #         raise PermissionError
+    #
+    #     context = self.get_context_data(object=self.object)
+    #     return self.render_to_response(context)
 
-class PracticeGamePlayView(LoginRequiredMixin, View):
+
+class PracticeGamePlayView(LoginRequiredMixin, generic.FormView):
+    form_class = QuestionForm
+    template_name = 'wordbook/practicegame_play.html'
     #     # form_class = PracticeGameForm
     #     # template_name = 'wordbook/repeated_game.html'
     #     #
@@ -124,14 +149,15 @@ class PracticeGamePlayView(LoginRequiredMixin, View):
     #     #     return redirect('wordbook:home')
     #
     def get(self, request, *args, **kwargs):
-        user_info = UserManager.objects.get(username=request.user)          # ユーザー情報の取得
 
-        PracticeGameContext(user_id=user_info.pk).save()                    # PracticeGameContextテーブルにデータ作成
-        latest_game_record = PracticeGameContext.objects.filter(            # 一番最近に作成されたPracticeGameContextのデータの取得
+        user_info = UserManager.objects.get(username=request.user)  # ユーザー情報の取得
+
+        # PracticeGameContext(user_id=user_info.pk).save()  # PracticeGameContextテーブルにデータ作成
+        latest_game_record = PracticeGameContext.objects.filter(  # 一番最近に作成されたPracticeGameContextのデータの取得
             user_id=request.user).values('pk').last()
 
-        user_word_data = Wordbook.objects.filter(user=request.user)         # ログイン中のユーザーの単語情報（単語帳に登録されている単語全て）の取得
-        user_wordbook_data = user_word_data.values('pk')                    # その id 取得
+        user_word_data = Wordbook.objects.filter(user=request.user)  # ログイン中のユーザーの単語情報（単語帳に登録されている単語全て）の取得
+        user_wordbook_data = user_word_data.values('pk')  # その id 取得
 
         # Wordbookからユーザーで絞り込んだid をランダムに１０個取得。
         wordbook_randomly_selected = np.random.choice(list(user_wordbook_data), 10, replace=False)
@@ -168,7 +194,8 @@ class PracticeGamePlayView(LoginRequiredMixin, View):
 
         group_by = 3
         list_divided_by_3 = []
-        for l in [list_for_multiple_choices[i:i + group_by] for i in range(0, len(list_for_multiple_choices), group_by)]:
+        for l in [list_for_multiple_choices[i:i + group_by] for i in
+                  range(0, len(list_for_multiple_choices), group_by)]:
             list_divided_by_3.append(l)
 
         # practice_game_idで絞り込んだ、Questionの id 取得
@@ -184,8 +211,8 @@ class PracticeGamePlayView(LoginRequiredMixin, View):
 
         # combined_dictからMultipleChoicesテーブルへ保存
         for cd in combined_dict:
-                for n in range(0, 3):
-                    MultipleChoices(question_id=cd, word_id=combined_dict[cd][n]).save()
+            for n in range(0, 3):
+                MultipleChoices(question_id=cd, word_id=combined_dict[cd][n]).save()
 
         # 保存した選択問題の取得
         list_for_get_shown_multiple_choices_data = []
@@ -221,7 +248,7 @@ class PracticeGamePlayView(LoginRequiredMixin, View):
             list_for_zip.append(l1 + [l2])
 
         list_for_vocab_meanings = []
-        for n in range(0,len(list_for_zip)):
+        for n in range(0, len(list_for_zip)):
             for l in list_for_zip[n]:
                 get_vocab_meanings = Word.objects.filter(pk=l).values('vocab_meaning')
                 list_for_vocab_meanings.append(get_vocab_meanings)
@@ -233,9 +260,58 @@ class PracticeGamePlayView(LoginRequiredMixin, View):
             shown_list.append(l)
 
         context = {
-                'shown_list': shown_list,
+            'shown_list': shown_list,
         }
         render(request, 'wordbook/repeated_game.html', context)
+
+
+def take_quiz(request, pk):
+    quiz = get_object_or_404(Question, pk=pk)
+    login_user = request.user
+
+    if login_user..filter(pk=pk).exists():
+            return render(request, 'students/taken_quiz.html')
+
+        total_questions = quiz.questions.count()
+        unanswered_questions = student.get_unanswered_questions(quiz)
+        total_unanswered_questions = unanswered_questions.count()
+        progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
+        question = unanswered_questions.first()
+
+        if request.method == 'POST':
+            form = TakeQuizForm(question=question, data=request.POST)
+            if form.is_valid():
+                with transaction.atomic():
+                    student_answer = form.save(commit=False)
+                    student_answer.student = student
+                    student_answer.save()
+                    if student.get_unanswered_questions(quiz).exists():
+                        return redirect('students:take_quiz', pk)
+                    else:
+                        correct_answers = student.quiz_answers.filter(answer__question__quiz=quiz,
+                                                                      answer__is_correct=True).count()
+                        score = round((correct_answers / total_questions) * 100.0, 2)
+                        TakenQuiz.objects.create(student=student, quiz=quiz, score=score)
+                        if score < 50.0:
+                            messages.warning(request, 'Better luck next time! Your score for the quiz %s was %s.' % (
+                            quiz.name, score))
+                        else:
+                            messages.success(request,
+                                             'Congratulations! You completed the quiz %s with success! You scored %s points.' % (
+                                             quiz.name, score))
+                        return redirect('students:quiz_list')
+        else:
+            form = TakeQuizForm(question=question)
+
+        return render(request, 'classroom/students/take_quiz_form.html', {
+            'quiz': quiz,
+            'question': question,
+            'form': form,
+            'progress': progress
+        })
+
+        return super(QuizTake, self).dispatch(request, *args, **kwargs)
+
 
 
     # def get_form_kwargs(self):

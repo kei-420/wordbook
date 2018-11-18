@@ -47,12 +47,14 @@
         {% for q in queryset %}
 
   			<tr>
-			  <td>{{ q.title }}</td>
+			  <td><a href="{% url 'wordbook:game_detail' slug=q.url %}">
+              {{ q.title }}</a>
+              </td>
 {#			  <td>{{ quiz.category }}</td>#}
 			  <td>{{ q.exam_paper }}</td>
 			  <td>{{ q.single_attempt }}</td>
 {#			  <td>#}
-{#				<a href="{% url 'quiz_start_page' slug=quiz.url %}">#}
+{#				<a href="{% url 'wordbook:game_detail' slug=q.url %}">#}
 {#				  {% trans "View details" %}#}
 {#				</a>#}
 			</tr>
