@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 
 from django.views import generic
 from django.urls import reverse_lazy
+from django.db import transaction
 
 from wordbook.forms import WordAddForm, QuestionForm
 from wordbook.models.wordbook import Wordbook, Word
@@ -38,7 +39,7 @@ class PracticeGameAddView(LoginRequiredMixin, generic.CreateView):
         joining_as_jap_date = '{0}年{1}月{2}日 {3}:{4}:{5}'\
             .format(split_date[0], split_date[1], split_date[2], split_date[3], split_date[4], split_date[5])
         count = PracticeGame.objects.filter(user_id=login_user.pk).count() + 1
-        title = "{0}回目の{1}'s単語クイズ｜{2}".format(count, login_user.username, joining_as_jap_date)
+        title = "{0}回目の{1}'s単語クイズ｜日時：{2}".format(count, login_user.username, joining_as_jap_date)
         # example_url = id_generator()
         to_get_url = re.sub('\s+', '-', title).lower()
         url = ''.join(letter for letter in to_get_url if letter.isalnum() or letter == '-')
@@ -151,26 +152,41 @@ class PracticeGamePlayView(LoginRequiredMixin, generic.FormView):
     form_class = QuestionForm
     template_name = 'wordbook/practicegame_play.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(PracticeGamePlayView, self).get_context_data(**kwargs)
-        return context
-
     def get_form_kwargs(self):
         kwargs = super(PracticeGamePlayView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
+        kwargs2 = super(PracticeGamePlayView, self).get_form_kwargs()
+        practice_game = get_object_or_404(PracticeGame, url=self.kwargs['practicegame_name'])
+        question = Question.objects.filter(practice_game_id=practice_game.pk).values('pk')
+        kwargs['answers'] = Question.objects.filter(practice_game_id=practice_game.pk).values('wordbook__word_id')
+        for q in question:
+            kwargs2['multiplechoices'] = MultipleChoices.objects.filter(question_id=q['pk']).values('word__vocab_meaning')
+            return kwargs, kwargs2
 
-    def play_game(self, request, pk, *args, **kwargs):
-        practice_game = get_object_or_404(PracticeGame, pk=pk)
-        login_user = request.user.pk
-        get_questions =
-        form = QuestionForm(request.POST)
+    def post(self, request, *args, **kwargs):
+        login_user = request.user
+        practice_game = get_object_or_404(PracticeGame, url=self.kwargs['practice_game'])
+        game = Question.objects.filter(practice_game_id=practice_game.pk).values('wordbook__word__vocab')
+
+        if practice_game.complete is True:
+            render(request, 'wordbook/practicegame_list.html')
+        total_questions = game.count()
+        questions = Question.objects.filter(practice_game_id=practice_game.pk).values('wordbook__word__vocab_meaning')
+
+        form = QuestionForm(questions=questions, data=request.POST)
         if not form.is_valid():
-
-
-
-
-
+            context = {
+                'form': form,
+                'question': kwargs['questions'],
+                'game_word': game,
+            }
+            return render(request, 'wordbook/practicegame_play.html', context)
+        with transaction.atomic():
+            user_answer = form.save(commit=False)
+            user_answer.user = login_user
+            user_answer.save()
+            correct_answers = login_user.
+        PracticeGame.completed(self.kwargs)
+        redirect(reverse('wordbook:game_list'))
 # def take_quiz(request, pk):
 #     quiz = get_object_or_404(Question, pk=pk)
 #     login_user = request.user

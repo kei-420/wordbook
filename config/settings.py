@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'wordbook.apps.WordbookConfig',
     'bootstrap_modal_forms',
     'pure_pagination',
+    'crispy_forms',
     # 'debug_toolbar',
 ]
 

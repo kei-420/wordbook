@@ -50,6 +50,10 @@ class PracticeGame(models.Model):
             self.single_attempt = True
         return self.single_attempt
 
+    def completed(self):
+        self.complete = True
+        return self.complete
+
 
 class Question(models.Model):
     """Question is used for making 10 questions per 'practice_game'
@@ -62,16 +66,6 @@ class Question(models.Model):
 
     class Meta:
         db_table = 'question'
-
-    def get_questions(self, request):
-        get_random_10_wordbooks = np.random.choice(Wordbook.objects.filter(
-            user_id=request.user.pk),
-                10,
-                replace=False
-        )
-        for element in get_random_10_wordbooks:
-            get_word_id = element.word_id
-            return get_word_id
 
     def get_practice_game(self, request):
         if self == request.user:

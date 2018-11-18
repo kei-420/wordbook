@@ -1,7 +1,7 @@
 from django import forms
 
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.practicegame import Question, MultipleChoices, PracticeGame
+from wordbook.models.practicegame import Question, MultipleChoices, PracticeGame, UserAnswer
 
 from django.forms.widgets import RadioSelect, Textarea
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -36,20 +36,21 @@ class WordAddForm(forms.ModelForm):
         return word_info
 
 
-class QuestionForm(forms.Form):
+class QuestionForm(forms.ModelForm):
     answer = forms.ModelChoiceField(
-        queryset=Wordbook.objects.none(),
+        queryset=MultipleChoices.objects.none(),
         widget=forms.RadioSelect(),
         required=True,
         empty_label=None)
 
     class Meta:
-        model = Question
-        fields = ('wordbook',)
+        model = UserAnswer
+        fields = ('answer',)
 
     def __init__(self, *args, **kwargs):
-        question = kwargs.pop('question')
+        questions = kwargs.pop('questions')
+        multiplechoices = kwargs.pop('multiplechoices')
         super().__init__(*args, **kwargs)
-        self.fields['answer'].queryset = question.answers
+        self.fields['answer'].queryset = multiplechoices
 
 
