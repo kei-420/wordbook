@@ -1,3 +1,5 @@
+import numpy as np
+
 from django.db import models, connection
 
 from django.core.exceptions import ImproperlyConfigured
@@ -43,6 +45,11 @@ class PracticeGame(models.Model):
     def __str__(self):
         return self.title
 
+    def turn_single_attempt(self):
+        if self.complete is False:
+            self.single_attempt = True
+        return self.single_attempt
+
 
 class Question(models.Model):
     """Question is used for making 10 questions per 'practice_game'
@@ -51,11 +58,30 @@ class Question(models.Model):
     wordbook = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
     # practice_game_context = models.ForeignKey(PracticeGameContext, on_delete=models.PROTECT)
 
-    was_correct = models.BooleanField(default=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'question'
+
+    def get_questions(self, request):
+        get_random_10_wordbooks = np.random.choice(Wordbook.objects.filter(
+            user_id=request.user.pk),
+                10,
+                replace=False
+        )
+        for element in get_random_10_wordbooks:
+            get_word_id = element.word_id
+            return get_word_id
+
+    def get_practice_game(self, request):
+        if self == request.user:
+            get_practice_game_id = PracticeGame.objects.get(user_id=request.user.pk)
+            for element in get_practice_game_id:
+                practice_game_id = element.pk
+                return practice_game_id
+
+    # def get_random_10_wordbooks(self, request):
+    #     if self == request.user:
 
 
 class MultipleChoices(models.Model):
@@ -107,13 +133,13 @@ class UserProgress(models.Model):
         return self.score
 
     def get_score_percentage(self):
-        return str(self.score / 10 * 100) + '%'
+        return self.score / 10 * 100
 
     class Meta:
         db_table = 'practicegamecontext'
 
     def __str__(self):
-        return str(self.practice_game) + '| ' + str(self.score)
+        return str(self.practice_game.title) + '| ' + str(self.score)
 
 
 class UserAnswer(models.Model):
@@ -122,20 +148,20 @@ class UserAnswer(models.Model):
     is_correct = models.BooleanField('Correct answer', default=False)
 
     def __str__(self):
-        return str(self.user) + '| ' + str(self.question)
+        return str(self.user.username) + '| ' + str(self.question)
 
 
-class CompletedPracticeGame(models.Model):
-    user_progress = models.ForeignKey(UserProgress, on_delete=models.CASCADE)
-    game = models.ForeignKey(PracticeGame, on_delete=models.CASCADE)
-    score = models.PositiveIntegerField(default=0)
-    date = models.DateTimeField(auto_now_add=True)
-
-    @property
-    def get_score(self):
-        return self.score
-
-    @property
-    def get_score_percentange(self):
-        return self.score / 10
+# class CompletedPracticeGame(models.Model):
+#     user_progress = models.ForeignKey(UserProgress, on_delete=models.CASCADE)
+#     game = models.ForeignKey(PracticeGame, on_delete=models.CASCADE)
+#     score = models.PositiveIntegerField(default=0)
+#     date = models.DateTimeField(auto_now_add=True)
+#
+#     @property
+#     def get_score(self):
+#         return self.score
+#
+#     @property
+#     def get_score_percentage(self):
+#         return self.score / 10
 

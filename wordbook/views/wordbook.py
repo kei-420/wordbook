@@ -5,7 +5,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 
 from wordbook.forms import WordAddForm
-from wordbook.models import Wordbook
+from wordbook.models.wordbook import Wordbook
 
 from django.core.paginator import Paginator
 

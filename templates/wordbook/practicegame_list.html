@@ -37,9 +37,9 @@
 			<tr>
 			  <th>{% trans "Title" %}</th>
 {#			  <th>{% trans "Category" %}</th>#}
-			  <th>{% trans "Exam" %}</th>
 			  <th>{% trans "Single attempt" %}</th>
-{#			  <th></th>#}
+			  <th>{% trans "Status" %}</th>
+			  <th></th>
 			</tr>
 		  </thead>
 
@@ -51,8 +51,13 @@
               {{ q.title }}</a>
               </td>
 {#			  <td>{{ quiz.category }}</td>#}
-			  <td>{{ q.exam_paper }}</td>
 			  <td>{{ q.single_attempt }}</td>
+			  <td>{{ q.complete }}</td>
+              <td>
+                  <form action="{% url 'wordbook:game_delete' q.id %}" method="post">{% csrf_token %}
+                      <button type="submit"><i class="fa fa-minus" style="font-size:10px;color:black"></i></button>
+                  </form>
+              </td>
 {#			  <td>#}
 {#				<a href="{% url 'wordbook:game_detail' slug=q.url %}">#}
 {#				  {% trans "View details" %}#}
@@ -65,7 +70,7 @@
 
 		</table>
 	{% else %}
-        <p>{% trans "There are no available quizzes" %}.</p>
+        <p>{% trans "No Game Created. Create One Now!" %}.</p>
     {% endif %}
     <div style="width: 200px; z-index: 10; position: fixed; right: 0.5%; bottom: 5%; height: 83px;">
     <form method="POST" action="{% url 'wordbook:game_add' %}">{% csrf_token %}

@@ -47,7 +47,7 @@ class PracticeGameListView(LoginRequiredMixin, generic.ListView):
     template_name = 'wordbook/practicegame_list.html'
 
     def get(self, request, *args, **kwargs):
-        queryset_list = PracticeGame.objects.filter(user_id=request.user.pk, draft=False)
+        queryset_list = PracticeGame.objects.filter(user_id=request.user.pk, complete=False)
         paginator = Paginator(queryset_list, self.paginate_by)
         page = self.request.GET.get('page')
         queryset = paginator.get_page(page)
@@ -56,6 +56,13 @@ class PracticeGameListView(LoginRequiredMixin, generic.ListView):
         }
         return render(request, 'wordbook/practicegame_list.html', context)
 
+
+class PracticeGameDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = PracticeGame
+    success_url = reverse_lazy('wordbook:game_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 # class PracticeGameResetView(LoginRequiredMixin, generic.DeleteView):
 #     model = PracticeGame

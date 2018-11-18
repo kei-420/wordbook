@@ -4,6 +4,7 @@
     SELVOC/HOME
 {% endblock %}
 {% block content %}
+    {% load i18n %}
 {% load static %}
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -33,6 +34,7 @@
     </div>
   </div>
 </div>
+{% if queryset %}
     <form class="col-md-12">
             <table border="3" class="wordbook">
              <thead>
@@ -69,5 +71,9 @@
         <i class="fa fa-plus" style="font-size:150px;color:rgb(251,244,255)"></i></a>
 </div>
     </form>
+{% else %}
+            <p>{% trans "No Word Registered. Register One Now!" %}.</p>
+{% endif %}
+
 </body>
 {% endblock %}
