@@ -50,6 +50,6 @@ class QuestionForm(forms.Form):
     def __init__(self, *args, **kwargs):
         question = kwargs.pop('question')
         super().__init__(*args, **kwargs)
-        self.fields['answer'].queryset = question.answers.order_by('text')
+        self.fields['answer'].queryset = question.answers
 
 
