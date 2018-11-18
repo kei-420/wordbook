@@ -48,7 +48,6 @@ class QuestionForm(forms.ModelForm):
         fields = ('answer',)
 
     def __init__(self, *args, **kwargs):
-        questions = kwargs.pop('questions')
         multiplechoices = kwargs.pop('multiplechoices')
         super().__init__(*args, **kwargs)
         self.fields['answer'].queryset = multiplechoices

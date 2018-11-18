@@ -58,20 +58,15 @@ class PracticeGameAddView(LoginRequiredMixin, generic.CreateView):
 
             Question(wordbook_id=is_wordbook_id, practice_game_id=get_practice_game_id.pk).save()
 
-        # wordbook_randomly_selectedで選出されたidで絞り込んでword_idの取得。
-        queryset_of_its_word_ids = []
-        for l in list_for_wordbook_randomly_selected:
-            its_word_ids = Wordbook.objects.filter(pk=l).values('word_id')
-            queryset_of_its_word_ids.append(its_word_ids)
+        game_words = Question.objects.filter(practice_game_id=get_practice_game_id).values('wordbook__word_id')
 
-        list_for_word_ids_queryset = []
-        for l in queryset_of_its_word_ids:
-            for entry in l:
-                is_word_id = entry['word_id']
-                list_for_word_ids_queryset.append(is_word_id)
+        list_for_word_ids = []
+        for g in game_words:
+            is_word_id = g['wordbook__word_id']
+            list_for_word_ids.append(is_word_id)
 
         list_for_random_choices = []
-        for l in list_for_word_ids_queryset:
+        for l in list_for_word_ids:
             choices = Word.objects.exclude(pk=l).values('pk')
             random_choices = np.random.choice(list(choices), 3, replace=False)
             list_for_random_choices.append(random_choices)
@@ -83,12 +78,15 @@ class PracticeGameAddView(LoginRequiredMixin, generic.CreateView):
 
         group_by = 3
         list_divided_by_3 = []
-        for l in [list_for_multiple_choices[i:i + group_by] for i in range(0, len(list_for_multiple_choices), group_by)]:
+        for l in [list_for_multiple_choices[i:i + group_by] for i in
+                  range(0, len(list_for_multiple_choices), group_by)]:
             list_divided_by_3.append(l)
+
+        for n in range(0, 10):
+            list_divided_by_3[n][0:0] = [game_words[n]['wordbook__word_id']]
 
         # practice_game_idで絞り込んだ、Questionの id 取得
         question_ids = Question.objects.filter(practice_game_id=get_practice_game_id.pk).values('pk')
-
         list_for_question_ids = []
         for q in question_ids:
             list_for_question_ids.append(q['pk'])
@@ -98,7 +96,7 @@ class PracticeGameAddView(LoginRequiredMixin, generic.CreateView):
 
         # combined_dictからMultipleChoicesテーブルへ保存
         for cd in combined_dict:
-            for n in range(0, 3):
+            for n in range(0, 4):
                 MultipleChoices(question_id=cd, word_id=combined_dict[cd][n]).save()
 
         return redirect(reverse('wordbook:game_list'))
@@ -154,22 +152,23 @@ class PracticeGamePlayView(LoginRequiredMixin, generic.FormView):
 
     def get_form_kwargs(self):
         kwargs = super(PracticeGamePlayView, self).get_form_kwargs()
-        kwargs2 = super(PracticeGamePlayView, self).get_form_kwargs()
         practice_game = get_object_or_404(PracticeGame, url=self.kwargs['practicegame_name'])
-        question = Question.objects.filter(practice_game_id=practice_game.pk).values('pk')
-        kwargs['answers'] = Question.objects.filter(practice_game_id=practice_game.pk).values('wordbook__word_id')
-        for q in question:
-            kwargs2['multiplechoices'] = MultipleChoices.objects.filter(question_id=q['pk']).values('word__vocab_meaning')
-            return kwargs, kwargs2
+        questions = Question.objects.filter(practice_game_id=practice_game.pk).values('pk')
+        for q in questions:
+            kwargs['multiplechoices'] = MultipleChoices.objects.filter(question_id=q['pk']).values('word__vocab_meaning')
+            # for q2 in queryset:
+            #     kwargs['multiplechoices'] = q2['word__vocab_meaning']
+            #     return kwargs
+            return kwargs
 
-    def post(self, request, *args, **kwargs):
+    def play_game(self, request, **kwargs):
         login_user = request.user
         practice_game = get_object_or_404(PracticeGame, url=self.kwargs['practice_game'])
         game = Question.objects.filter(practice_game_id=practice_game.pk).values('wordbook__word__vocab')
 
         if practice_game.complete is True:
             render(request, 'wordbook/practicegame_list.html')
-        total_questions = game.count()
+        # total_questions = game.count()
         questions = Question.objects.filter(practice_game_id=practice_game.pk).values('wordbook__word__vocab_meaning')
 
         form = QuestionForm(questions=questions, data=request.POST)
@@ -184,7 +183,7 @@ class PracticeGamePlayView(LoginRequiredMixin, generic.FormView):
             user_answer = form.save(commit=False)
             user_answer.user = login_user
             user_answer.save()
-            correct_answers = login_user.
+
         PracticeGame.completed(self.kwargs)
         redirect(reverse('wordbook:game_list'))
 # def take_quiz(request, pk):

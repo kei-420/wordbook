@@ -144,18 +144,3 @@ class UserAnswer(models.Model):
     def __str__(self):
         return str(self.user.username) + '| ' + str(self.question)
 
-
-# class CompletedPracticeGame(models.Model):
-#     user_progress = models.ForeignKey(UserProgress, on_delete=models.CASCADE)
-#     game = models.ForeignKey(PracticeGame, on_delete=models.CASCADE)
-#     score = models.PositiveIntegerField(default=0)
-#     date = models.DateTimeField(auto_now_add=True)
-#
-#     @property
-#     def get_score(self):
-#         return self.score
-#
-#     @property
-#     def get_score_percentage(self):
-#         return self.score / 10
-

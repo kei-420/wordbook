@@ -10,7 +10,7 @@
   <p class="lead">{{ question.vocab }}</p>
   <form method="post" novalidate>
     {% csrf_token %}
-    {{ form|crispy }}
+    {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Next →</button>
   </form>
 {% endblock %}
