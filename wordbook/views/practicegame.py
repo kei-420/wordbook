@@ -88,7 +88,7 @@ class QuizCreateView(CreateView):
         quiz.save()
         vocab_list = random_select(quiz.taker_id)
         for v in vocab_list:
-            Question(quiz_id=quiz.pk, game_word_id=v.pk)
+            Question(quiz_id=quiz.pk, game_word_id=v['word_id']).save()
         messages.success(self.request, "The quiz '%s' was created with success! Go ahead and take the quiz now!" % quiz)
         return redirect('wordbook:game_list')
 
@@ -97,8 +97,7 @@ def random_select(request):
     randomly_selected = np.random.choice(Wordbook.objects.filter(user_id=request).values('word_id'), 5, replace=False)
     vocab_list = []
     for r in randomly_selected:
-        vocab = str(r)
-        vocab_list.append(vocab)
+        vocab_list.append(r)
     return vocab_list
 
 

@@ -1,4 +1,29 @@
-Internal Server Error: /selvoc/wordbook/home/repeated_game/
+Internal Server Error: /selvoc/wordbook/home/game_add/
+Traceback (most recent call last):
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/cursors.py", line 170, in execute
+    result = self._query(query)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/cursors.py", line 328, in _query
+    conn.query(q)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 516, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 727, in _read_query_result
+    result.read()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 1066, in read
+    first_packet = self.connection._read_packet()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 683, in _read_packet
+    packet.check_error()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`wordbook_db`.`wordbook_question`, CONSTRAINT `wordbook_question_game_word_id_4712733f_fk_wordbook_id` FOREIGN KEY (`game_word_id`) REFERENCES `wordbook` (`id`))')
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
     response = get_response(request)
@@ -10,13 +35,66 @@ Traceback (most recent call last):
     return func(*args, **kwds)
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/base.py", line 68, in view
     return self.dispatch(request, *args, **kwargs)
-  File "/Users/kei./Desktop/Django/wordbook/wordbook/views.py", line 194, in dispatch
-    return super(RepeatedGameView, self).dispatch(request, *args, **kwargs)
-  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/contrib/auth/mixins.py", line 52, in dispatch
-    return super().dispatch(request, *args, **kwargs)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/utils/decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
   File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/base.py", line 88, in dispatch
     return handler(request, *args, **kwargs)
-  File "/Users/kei./Desktop/Django/wordbook/wordbook/views.py", line 156, in get
-    list_for_its_loop.append(list_for_after_loop[n]['word_id'])
-TypeError: 'int' object is not subscriptable
-[15/Nov/2018 20:07:54] "GET /selvoc/wordbook/home/repeated_game/ HTTP/1.1" 500 103281
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/edit.py", line 172, in post
+    return super().post(request, *args, **kwargs)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/views/generic/edit.py", line 142, in post
+    return self.form_valid(form)
+  File "/Users/kei./Desktop/Django/wordbook/wordbook/views/practicegame.py", line 91, in form_valid
+    Question(quiz_id=quiz.pk, game_word_id=v['word_id']).save()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/base.py", line 718, in save
+    force_update=force_update, update_fields=update_fields)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/base.py", line 748, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/base.py", line 831, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/base.py", line 869, in _do_insert
+    using=using, raw=raw)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/query.py", line 1136, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1289, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/debug_toolbar/panels/sql/tracking.py", line 176, in execute
+    return self._record(self.cursor.execute, sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/debug_toolbar/panels/sql/tracking.py", line 117, in _record
+    return method(sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 100, in execute
+    return super().execute(sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 68, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 77, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/cursors.py", line 170, in execute
+    result = self._query(query)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/cursors.py", line 328, in _query
+    conn.query(q)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 516, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 727, in _read_query_result
+    result.read()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 1066, in read
+    first_packet = self.connection._read_packet()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/connections.py", line 683, in _read_packet
+    packet.check_error()
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/Users/kei./anaconda3/lib/python3.6/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+django.db.utils.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`wordbook_db`.`wordbook_question`, CONSTRAINT `wordbook_question_game_word_id_4712733f_fk_wordbook_id` FOREIGN KEY (`game_word_id`) REFERENCES `wordbook` (`id`))')
+[20/Nov/2018 20:32:06] "POST /selvoc/wordbook/home/game_add/ HTTP/1.1" 500 259037
+
