@@ -23,6 +23,7 @@
     <ul class="navbar-nav mr-auto">
     </ul>
 {#      <a class="nav-link" href="{% url 'wordbook:home' %}">Home</a>#}
+      <a class="nav-link" href="{% url 'wordbook:add_word' %}">Add</a>
       <a class="nav-link" href="{% url 'wordbook:game_list' %}">Practice</a>
       <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
   </div>
@@ -65,11 +66,14 @@
                 {% include 'wordbook/paginate.html' %}
 {#                   {% include 'wordbook/word_add.html' %}#}
 
-
-<div style="width: 200px; z-index: 10; position: fixed; right: 4%; bottom: 13%; height: 83px;">
-   <a class="btn" href="{% url 'wordbook:add_word' %}">
-        <i class="fa fa-plus" style="font-size:150px;color:rgb(251,244,255)"></i></a>
-</div>
+{##}
+{#<div style="width: 200px; z-index: 10; position: fixed; right: 4%; bottom: 13%; height: 83px;">#}
+{#   <a class="btn" href="{% url 'wordbook:add_word' %}">#}
+{#        <i class="fa fa-plus" style="font-size:150px;color:rgb(251,244,255)"></i></a>#}
+{#</div>#}
+{#    <div style="width: 200px; z-index: 10; position: fixed; right: 4%; bottom: 13%; height: 83px;">#}
+{#   #}
+{#    </div>#}
     </form>
 {% else %}
             <p>{% trans "No Word Registered. Register One Now!" %}.</p>

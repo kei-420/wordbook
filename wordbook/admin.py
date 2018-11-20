@@ -1,6 +1,6 @@
 from django.contrib import admin
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.practicegame import PracticeGame
+
 # admin.site.register(Word)
 # admin.site.register(Wordbook)
 # admin.site.register(RepeatedGame)
@@ -14,7 +14,7 @@ from wordbook.models.practicegame import PracticeGame
 
 admin.site.register(Word)
 admin.site.register(Wordbook)
-admin.site.register(PracticeGame)
+
 
 
 

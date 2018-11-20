@@ -2,6 +2,7 @@ from django import forms
 from .models import UserManager
 from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ObjectDoesNotExist
+from wordbook.models.practicegame import QuizTaker
 
 
 class SignUpForm(forms.ModelForm):
@@ -59,6 +60,7 @@ class SignUpForm(forms.ModelForm):
         user_info.set_password(self.cleaned_data["password"])
         if commit:
             user_info.save()
+            QuizTaker.objects.create(user=user_info)
 
         return user_info
 
