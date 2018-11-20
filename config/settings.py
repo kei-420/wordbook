@@ -81,6 +81,7 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
         'OPTIONS': {
             'sql_mode': 'TRADITIONAL',
+            "init_command": "SET foreign_key_checks = 0;",
         }
     }
 }

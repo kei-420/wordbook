@@ -14,8 +14,8 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView, FormView, DetailView, DeleteView
 
-from wordbook.models.practicegame import Quiz, QuizTaker, CompletedQuiz, Question
-from wordbook.models.wordbook import Wordbook
+from wordbook.models.practicegame import Quiz, QuizTaker, CompletedQuiz, Question, MultipleQuestions
+from wordbook.models.wordbook import Wordbook, Word
 from accounts.models import UserManager
 
 from wordbook.forms import QuizCreateForm
@@ -86,19 +86,55 @@ class QuizCreateView(CreateView):
         quiz = form.save(commit=False)
         quiz.taker_id = self.request.user.pk
         quiz.save()
-        vocab_list = random_select(quiz.taker_id)
+        vocab_list = wordids_random_select(quiz.taker_id)
         for v in vocab_list:
-            Question(quiz_id=quiz.pk, game_word_id=v['word_id']).save()
+            Question.objects.create(quiz_id=quiz.pk, game_word_id=v['pk'])
+        words_randomly_selected(quiz.pk)
         messages.success(self.request, "The quiz '%s' was created with success! Go ahead and take the quiz now!" % quiz)
         return redirect('wordbook:game_list')
 
 
-def random_select(request):
-    randomly_selected = np.random.choice(Wordbook.objects.filter(user_id=request).values('word_id'), 5, replace=False)
+def wordids_random_select(user_id):
+    randomly_selected = np.random.choice(Wordbook.objects.filter(user_id=user_id).values('pk'), 5, replace=False)
     vocab_list = []
     for r in randomly_selected:
         vocab_list.append(r)
     return vocab_list
+
+
+def words_randomly_selected(get_quiz_id):
+    game_wordids = Question.objects.filter(quiz_id=get_quiz_id).values('game_word__word_id', 'pk')
+    q_id_list = []
+    for q_id in game_wordids:
+        random_choices = np.random.choice(Word.objects.exclude(pk=q_id['game_word__word_id']).values('pk'), 3, replace=False)
+        q_id_list.append(random_choices)
+
+    list_for_multiple_choices = []
+    for n in range(0, 5):
+        for l in q_id_list[n]:
+            list_for_multiple_choices.append(l['pk'])
+
+    group_by = 3
+    list_divided_by_3 = []
+    for l in [list_for_multiple_choices[i:i + group_by] for i in range(0, len(list_for_multiple_choices), group_by)]:
+        list_divided_by_3.append(l)
+
+    for n in range(0, 5):
+        list_divided_by_3[n][0:0] = [game_wordids[n]['game_word__word_id']]
+
+    # practice_game_idで絞り込んだ、Questionの id 取得
+
+    list_for_question_ids = []
+    for q in game_wordids:
+        list_for_question_ids.append(q['pk'])
+
+    # 作成したquestion_idそれぞれに対応するword_idを明確にする為の辞書（combined_dict）を作成
+    combined_dict = dict(zip(list_for_question_ids, list_divided_by_3))
+
+    # combined_dictからMultipleChoicesテーブルへ保存
+    for cd in combined_dict:
+        for n in range(0, 4):
+            MultipleQuestions(question_id=cd, choices_id=combined_dict[cd][n]).save()
 
 
 @method_decorator([login_required], name='dispatch')
@@ -164,7 +200,7 @@ class QuizDeleteView(DeleteView):
 #
 #         list_for_random_choices = []
 #         for l in list_for_word_ids:
-#             choices = Word.objects.exclude(pk=l).values('pk')
+#             choices = Word.objects.exclude(pk=l).')
 #             random_choices = np.random.choice(list(choices), 3, replace=False)
 #             list_for_random_choices.append(random_choices)
 #

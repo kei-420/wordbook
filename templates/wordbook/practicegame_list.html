@@ -128,10 +128,10 @@
 {#            </td>#}
 {#          <td class="text-right"><a href="{% url 'wordbook:delete_word' q.id %}">Delete</a></td>#}
 {#          </tr>#}
-{#        {% empty %}#}
-{#          <tr>#}
-{#            <td class="bg-light text-center font-italic" colspan="4">No quiz registered yet.</td>#}
-{#          </tr>#}
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="4">No quiz registered yet.</td>
+          </tr>
         {% endfor %}
 {#      </tbody>#}
 {#    </table>#}
