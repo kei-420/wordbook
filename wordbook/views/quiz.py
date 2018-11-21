@@ -12,12 +12,12 @@ from django.utils.decorators import method_decorator
 
 from django.views.generic import CreateView, ListView, UpdateView, FormView, DetailView, DeleteView
 
-from wordbook.models.practicegame import Quiz, QuizTaker, CompletedQuiz, Question, MultipleQuestions
+from wordbook.models.quiz import Quiz, QuizTaker, CompletedQuiz, Question, MultipleQuestions
 from wordbook.models.wordbook import Wordbook, Word
 
 from django.core.exceptions import ValidationError
 
-
+from wordbook.forms import QuizTakeForm
 from django.core.paginator import Paginator
 
 
@@ -126,7 +126,17 @@ class QuizDeleteView(DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-def take_quiz(request):
-    return render(request, 'wordbook/take_quiz_form.html')
+@login_required
+def take_quiz(request, pk):
+    # quiz = get_object_or_404(Quiz, pk=pk)
+    # login_user = request.user.quiztaker
+    #
+    # if login_user.quizzes.filter(pk=pk).exists():
+    #     return render(request, 'wordbook/taken_quiz_list.html')
+    #
+    # form = QuizTakeForm(question=question, data=request.POST)
+    # form.save(commit=False)
+
+    return render(request, 'wordbook/take_quiz_form.html', quiz)
 
 

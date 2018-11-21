@@ -1,7 +1,7 @@
 from django import forms
 
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.practicegame import Question, Quiz, MultipleQuestions, QuizTakerAnswer
+from wordbook.models.quiz import Question, Quiz, MultipleQuestions, QuizTakerAnswer
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -38,6 +38,30 @@ class WordAddForm(forms.ModelForm):
         return word_info
 
 
+# class QuizTakeForm(forms.Form):
+#     def __init__(self, data, questions, *args, **kwargs):
+#         super(QuizTakeForm, self).__init__(data, *args, **kwargs)
+#         self.questions = questions
+#         for question in questions:
+#             answer = "question_%d" % question.pk
+#             choices = []
+#             for answer in question.answer_set().all():
+#                 choices.append((answer.pk, answer.answer,))
+#             ## May need to pass some initial data, etc:
+#             answer = forms.ChoiceField(label=question.question, required=True,
+#                                       choices=choices, widget=forms.RadioSelect)
+#
 
+class QuizTakeForm(forms.ModelForm):
+    class Meta:
+        model = QuizTakerAnswer
+        fields = ('answer',)
 
+    def __init__(self, *args, **kwargs):
+        super(QuizTakeForm, self).__init__(*args, **kwargs)
+        question = kwargs.pop('question')
+        self.fields['answer'] = forms.ModelChoiceField(
+            queryset=MultipleQuestions.objects.filter(question_id=question.pk),
+            widget=forms.RadioSelect,
+        )
 
