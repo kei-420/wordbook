@@ -91,7 +91,7 @@
 </nav>
 
         {% include 'wordbook/_header.html' with active='new' %}
-        <form method="POST" action="{% url 'wordbook:game_add' %}">{% csrf_token %}
+        <form method="POST" action="{% url 'wordbook:quiz_add' %}">{% csrf_token %}
       <button type="submit" class="btn btn-success">クイズ作成</button>
      </form>
 {#  <div class="card">#}
@@ -112,9 +112,9 @@
 {#            <td class="align-middle">{{ quiz.subject.get_html_badge }}</td>#}
             <td class="align-middle">{{ quiz.num_questions }} questions</td>
             <td class="text-right">
-              <a href="{% url 'wordbook:game_play' quiz.pk %}" class="btn btn-primary">Start quiz</a>
+              <a href="{% url 'wordbook:quiz_take' quiz.pk %}" class="btn btn-primary">Start quiz</a>
             </td>
-          <td class="text-right"><a href="{% url 'wordbook:delete_word' quiz.pk %}"><button type="button" class="btn btn-primary remove-btn">
+          <td class="text-right"><a href="{% url 'wordbook:quiz_delete' quiz.pk %}"><button type="button" class="btn btn-primary remove-btn">
       <i class="fa fa-minus" aria-hidden="true"></i>
     </button></a></td>
           </tr>

@@ -23,21 +23,11 @@ class MultipleQuestions(models.Model):
     choices = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='choices')
     is_correct = models.BooleanField('Correct Answer', default=False)
 
-    # def correct(self):
-    #     self.is_correct = True
-    #     return self.is_correct
+    def get_answers_list(self):
+        return [(answer.question_id, answer.choices_id) for answer in Question.objects.filter(quiz_id=self)]
 
-    # def check_if_correct(self, guess):
-    #     answer = Question.objects.get(pk=guess)
-    #
-    #     if answer.correct is True:
-    #         return True
-    #     else:
-    #         return False
-# class Answer(models.Model):
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-#     answer = models.ForeignKey(Word, on_delete=models.PROTECT)
-#     is_correct = models.BooleanField('Correct Answer', default=False)
+        # [(answer.id, answer.content) for answer in
+        #     self.order_answers(Answer.objects.filter(question=self))]
 
 
 class QuizTaker(models.Model):

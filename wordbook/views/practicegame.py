@@ -1,6 +1,4 @@
 import numpy as np
-import re
-from datetime import datetime
 import random
 
 from django.contrib import messages
@@ -17,8 +15,8 @@ from django.views.generic import CreateView, ListView, UpdateView, FormView, Det
 from wordbook.models.practicegame import Quiz, QuizTaker, CompletedQuiz, Question, MultipleQuestions
 from wordbook.models.wordbook import Wordbook, Word
 
-# from wordbook.forms import QuizCreateForm
-from wordbook.forms import TakeQuizForm
+from django.core.exceptions import ValidationError
+
 
 from django.core.paginator import Paginator
 
@@ -28,15 +26,12 @@ class QuizListView(ListView):
     model = Quiz
     ordering = ('name', )
     context_object_name = 'quizzes'
-    template_name = 'wordbook/practicegame_list.html'
+    template_name = 'wordbook/quiz_list.html'
 
     def get_queryset(self):
         login_user = self.request.user.quiztaker
-        # completed_quizzes = login_user.quizzes.values_list('pk', flat=True)
-        # get_completed_quizzes = CompletedQuiz.objects.filter(taker_id=login_user.pk).values('quiz_id')
         get_completed_quizzes = login_user.quizzes.values_list('pk', flat=True)
-        queryset = Quiz.objects.exclude(pk__in=get_completed_quizzes).annotate(num_questions=Count('questions'))\
-            # .filter(questions_count__gt=0)
+        queryset = Quiz.objects.exclude(pk__in=get_completed_quizzes).annotate(num_questions=Count('questions'))
         return queryset
 
 
@@ -54,7 +49,6 @@ class CompletedQuizListView(ListView):
 @method_decorator([login_required], name='dispatch')
 class QuizCreateView(CreateView):
     model = Quiz
-    # form_class = QuizCreateForm
     fields = ('name',)
     template_name = 'wordbook/quiz_add_form.html'
 
@@ -62,6 +56,8 @@ class QuizCreateView(CreateView):
         quiz = form.save(commit=False)
         quiz.taker_id = self.request.user.pk
         quiz.save()
+        if Wordbook.objects.filter(user_id=self.request.user.pk).count() < 5:
+            messages.error(self.request, "Your wordbook owns less than 5 words. Add more to create a quiz.")
         vocab_list = wordids_random_select(quiz.taker_id)
         for v in vocab_list:
             Question.objects.create(quiz_id=quiz.pk, game_word_id=v['word_id'])
@@ -74,7 +70,7 @@ class QuizCreateView(CreateView):
                 turn_to_true.save()
 
         messages.success(self.request, "The quiz '%s' was created with success! Go ahead and take the quiz now!" % quiz)
-        return redirect('wordbook:game_list')
+        return redirect('wordbook:quiz_list')
 
 
 def wordids_random_select(user_id):
@@ -120,73 +116,17 @@ def words_randomly_selected(get_quiz_id):
         for n in range(0, 4):
             MultipleQuestions(question_id=cd, choices_id=combined_dict[cd][n]).save()
 
-    # for qi in list_for_question_ids:
-    #     get_mq = MultipleQuestions.objects.filter(question_id=qi).values_list('choices', flat=True)
-    #     for gm in get_mq:
-    #         if Question.objects.filter(game_word=gm).filter(quiz_id=get_quiz_id).exists():
-                # MultipleQuestions.correct(question)
-
 
 @method_decorator([login_required], name='dispatch')
 class QuizDeleteView(DeleteView):
     model = Quiz
-    success_url = reverse_lazy('wordbook:game_list')
+    success_url = reverse_lazy('wordbook:quiz_list')
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
 
 
-# @login_required
-# def take_quiz(request, pk):
-#     AnswerFormSet = inlineformset_factory(
-#         Question,  # parent model
-#         Answer,  # base model
-#         formset=BaseAnswerInlineFormSet,
-#         fields=('text', 'is_correct'),
-#         min_num=2,
-#         validate_min=True,
-#         max_num=10,
-#         validate_max=True
-#     )
+def take_quiz(request):
+    return render(request, 'wordbook/take_quiz_form.html')
 
-@login_required
-def take_quiz(request, pk):
-    quiz = get_object_or_404(Quiz, pk=pk)
-    login_user = request.user.quiztaker
 
-    if login_user.quizzes.filter(pk=pk).exists():
-        return render(request, 'wordbook/taken_quiz_list.html')
-
-    total_questions = quiz.questions.count()
-    unanswered_questions = login_user.get_unanswered_questions(quiz)
-    total_unanswered_questions = unanswered_questions.count()
-    progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
-    question = unanswered_questions.first()
-
-    if request.method == 'POST':
-        form = TakeQuizForm(question=question, data=request.POST)
-        if form.is_valid():
-            with transaction.atomic():
-                user_answer = form.save(commit=False)
-                user_answer.taker = login_user
-                login_user.save()
-                if login_user.get_unanswered_questions(quiz).exists():
-                    return redirect('wordbook:game_play', pk)
-                else:
-                    correct_answers = login_user.quiz_answers.filter(answer__question__quiz=quiz, answer__is_correct=True).count()
-                    score = round((correct_answers / total_questions) * 100.0, 2)
-                    CompletedQuiz.objects.create(user=login_user, quiz=quiz, score=score)
-                    if score < 50.0:
-                        messages.warning(request, 'Better luck next time! Your score for the quiz %s was %s.' % (quiz.name, score))
-                    else:
-                        messages.success(request, 'Congratulations! You completed the quiz %s with success! You scored %s points.' % (quiz.name, score))
-                    return redirect('wordbook:game_list')
-    else:
-        form = TakeQuizForm(question=question)
-
-    return render(request, 'wordbook/take_quiz_form.html', {
-        'quiz': quiz,
-        'question': question,
-        'form': form,
-        'progress': progress
-    })

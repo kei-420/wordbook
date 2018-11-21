@@ -3,11 +3,16 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+{% load static %}
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'wordbook/home.css' %}">
   <div class="progress mb-3">
     <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ progress }}%"></div>
   </div>
-  <h2 class="mb-3">{{ quiz.name }}</h2>
-  <p class="lead">{{ question.text }}</p>
+  <h1 class="mb-3">{{ quiz.name }}</h1>
+  <p class="lead">{{ question.game_word }}</p>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form|crispy }}
