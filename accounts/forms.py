@@ -2,7 +2,7 @@ from django import forms
 from .models import UserManager
 from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ObjectDoesNotExist
-from wordbook.models.practicegame import QuizTaker
+from wordbook.models.quiz import QuizTaker
 
 
 class SignUpForm(forms.ModelForm):
