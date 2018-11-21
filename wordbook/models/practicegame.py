@@ -1,3 +1,4 @@
+import random
 from django.db import models
 
 from accounts.models import UserManager
@@ -14,19 +15,29 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
-    game_word = models.ForeignKey(Wordbook, on_delete=models.PROTECT)
-    is_correct = models.BooleanField('Correct Answer', default=False)
+    game_word = models.ForeignKey(Word, on_delete=models.PROTECT)
 
 
 class MultipleQuestions(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='questions')
-    choices = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='choices')
-
-
-class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-    answer = models.ForeignKey(Word, on_delete=models.PROTECT)
+    choices = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='choices')
     is_correct = models.BooleanField('Correct Answer', default=False)
+
+    # def correct(self):
+    #     self.is_correct = True
+    #     return self.is_correct
+
+    # def check_if_correct(self, guess):
+    #     answer = Question.objects.get(pk=guess)
+    #
+    #     if answer.correct is True:
+    #         return True
+    #     else:
+    #         return False
+# class Answer(models.Model):
+#     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
+#     answer = models.ForeignKey(Word, on_delete=models.PROTECT)
+#     is_correct = models.BooleanField('Correct Answer', default=False)
 
 
 class QuizTaker(models.Model):
@@ -35,12 +46,15 @@ class QuizTaker(models.Model):
 
     def get_unanswered_questions(self, quiz):
         answered_questions = self.quiz_answers.filter(answer__question__quiz=quiz).values_list('answer__question__pk', flat=True)
-        questions = quiz.questions.exclude(pk__in=answered_questions).order_by('answer')
+        questions = quiz.questions.exclude(pk__in=answered_questions).order_by('answers')
         return questions
+
+    def __str__(self):
+        return self.user.username
 
 
 class CompletedQuiz(models.Model):
-    taker = models.ForeignKey(QuizTaker, on_delete=models.PROTECT, related_name='completed_quizzes')
+    user = models.ForeignKey(QuizTaker, on_delete=models.PROTECT, related_name='completed_quizzes')
     quiz = models.ForeignKey(Quiz, on_delete=models.PROTECT, related_name='completed_quizzes')
     score = models.FloatField()
     completed_at = models.DateTimeField(auto_now_add=True)
@@ -48,6 +62,6 @@ class CompletedQuiz(models.Model):
 
 class QuizTakerAnswer(models.Model):
     taker = models.ForeignKey(QuizTaker, on_delete=models.PROTECT, related_name='quiz_answers')
-    answer = models.ForeignKey(Answer, on_delete=models.PROTECT, related_name='+')
+    answer = models.ForeignKey(MultipleQuestions, on_delete=models.PROTECT, related_name='+')
 
 

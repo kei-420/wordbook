@@ -11,6 +11,6 @@ urlpatterns = [
     path('home/complete_game_list', practicegame.CompletedQuizListView.as_view(), name='completed_game_list'),
     path('home/game_add/', practicegame.QuizCreateView.as_view(), name='game_add'),
     path('home/game_delete/<int:pk>/', practicegame.QuizDeleteView.as_view(), name='game_delete'),
-    path(r'^home/game_list/(?P<slug>[\w-]+)/$', practicegame.PracticeGameDetailView.as_view(), name='game_detail'),
-    path('home/game/(?P<practicegame_name>[\w-]+)/take/$', practicegame.PracticeGamePlayView.as_view(), name='game_play'),
+    # path(r'^home/game_list/(?P<slug>[\w-]+)/$', practicegame.PracticeGameDetailView.as_view(), name='game_detail'),
+    path('home/game_list/game/<int:pk>/take/', practicegame.take_quiz, name='game_play'),
 ]

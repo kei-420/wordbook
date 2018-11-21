@@ -2,7 +2,7 @@ from django import forms
 import numpy as np
 import random
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.practicegame import Question, Quiz, MultipleQuestions
+from wordbook.models.practicegame import Question, Quiz, MultipleQuestions, QuizTakerAnswer
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -38,37 +38,62 @@ class WordAddForm(forms.ModelForm):
             word_info.save()
         return word_info
 
+#
+# class QuizCreateForm(forms.ModelForm):
+#     class Meta:
+#         model = Quiz
+#         fields = ('name', )
+#
+#     def __init__(self, *args, **kwargs):
+#         self._user = kwargs.pop('user')
+#         super(QuizCreateForm, self).__init__(*args, **kwargs)
+#         self.fields['name'].widget.attrs = {'placeholder': 'クイズタイトル'}
+#
+#     def clean_name(self):
+#         name = self.cleaned_data['name']
+#         return name
+#
+#     def save(self, commit=True):
+#         name = super(QuizCreateForm, self).save()
+#         if commit:
+#             name.save()
+#             vocab_list = random_select(self._user)
+#             for v in vocab_list:
+#                 Question.objects.create(quiz=name.pk, game_word=v)
+#
+#
+# def random_select(request):
+#     randomly_selected = np.random.choice(Wordbook.objects.filter(user_id=request.user.pk), 10, replace=False)
+#     vocab_list = []
+#     for r in randomly_selected:
+#         vocab = str(r)
+#         vocab_list.append(vocab)
+#     return vocab_list
 
-class QuizCreateForm(forms.ModelForm):
+
+class TakeQuizForm(forms.ModelForm):
+    # answer = forms.ModelChoiceField(
+    #     queryset=MultipleQuestions.objects.none(),
+    #     widget=forms.RadioSelect(),
+    #     required=True,
+    #     empty_label=None,
+    # )
+    choices = forms.ModelChoiceField(
+        queryset=MultipleQuestions.objects.none(),
+        widget=forms.RadioSelect(),
+        required=True,
+        empty_label=None,
+    )
+
     class Meta:
-        model = Quiz
-        fields = ('name', )
+        model = QuizTakerAnswer
+        fields = ('answer', )
 
     def __init__(self, *args, **kwargs):
-        self._user = kwargs.pop('user')
-        super(QuizCreateForm, self).__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs = {'placeholder': 'クイズタイトル'}
-
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        return name
-
-    def save(self, commit=True):
-        name = super(QuizCreateForm, self).save()
-        if commit:
-            name.save()
-            vocab_list = random_select(self._user)
-            for v in vocab_list:
-                Question.objects.create(quiz=name.pk, game_word=v)
-
-
-def random_select(request):
-    randomly_selected = np.random.choice(Wordbook.objects.filter(user_id=request.user.pk), 10, replace=False)
-    vocab_list = []
-    for r in randomly_selected:
-        vocab = str(r)
-        vocab_list.append(vocab)
-    return vocab_list
+        question = kwargs.pop('multiplequestions')
+        super().__init__(*args, **kwargs)
+        self.fields['choices'].queryset = question.choices
+            # question.answers.order_by('text')
 # class QuestionForm(forms.ModelForm):
 #     answer = forms.ModelChoiceField(
 #         queryset=MultipleChoices.objects.none(),
