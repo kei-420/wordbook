@@ -161,13 +161,13 @@ def take_quiz(request, pk):
                     if score < 50.0:
                         messages.warning(
                             request,
-                            'Better luck next time! Your score for the quiz %s was %s.'
+                            'Better luck next time! Your score for the quiz %s was %s/100.'
                             % (quiz, score),
                         )
                     else:
                         messages.success(
                             request,
-                            'Congratulations! You completed the quiz %s with success! You scored %s points.'
+                            'Great Job! You completed the quiz %s with a high score, %s/100.'
                             % (quiz, score),
                         )
                     return redirect('wordbook:quiz_list')

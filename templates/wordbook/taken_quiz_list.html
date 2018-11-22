@@ -34,11 +34,11 @@
         </tr>
       </thead>
       <tbody>
-        {% for taken_quiz in completed_quizzes %}
+        {% for completed_quiz in completed_quizzes %}
           <tr>
-            <td>{{ taken_quiz.quiz.name }}</td>
+            <td>{{ completed_quiz.quiz.name }}</td>
 {#            <td>{{ taken_quiz.quiz.subject.get_html_badge }}</td>#}
-            <td>{{ taken_quiz.score }}/100</td>
+            <td>{{ completed_quiz.score }}/100</td>
           </tr>
         {% empty %}
           <tr>
