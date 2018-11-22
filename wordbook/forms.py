@@ -1,12 +1,7 @@
 from django import forms
 
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.quiz import Question, Quiz, MultipleQuestions, QuizTakerAnswer
-
-from django.core.exceptions import ObjectDoesNotExist
-
-from django.forms.widgets import RadioSelect, Textarea
-from django.contrib.admin.widgets import FilteredSelectMultiple
+from wordbook.models.quiz import  MultipleQuestions, QuizTakerAnswer
 
 
 class WordAddForm(forms.ModelForm):

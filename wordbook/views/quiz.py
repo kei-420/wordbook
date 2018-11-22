@@ -5,22 +5,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.forms import inlineformset_factory
+
 from django.utils.decorators import method_decorator
+from django.views.generic import CreateView, ListView, DeleteView
 
-from django.views.generic import CreateView, ListView, UpdateView, FormView, DetailView, DeleteView
-
-from wordbook.models.quiz import Quiz, QuizTaker, CompletedQuiz, Question, MultipleQuestions
+from wordbook.models.quiz import Quiz, CompletedQuiz, Question, MultipleQuestions
 from wordbook.models.wordbook import Wordbook, Word
-
-from django.views import View
-
-from django.core.exceptions import ValidationError
-
 from wordbook.forms import QuizTakeForm
-from django.core.paginator import Paginator
 
 
 @method_decorator([login_required], name='dispatch')
