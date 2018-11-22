@@ -35,7 +35,7 @@ class WordAddForm(forms.ModelForm):
 
 class QuizTakeForm(forms.ModelForm):
     answer = forms.ModelChoiceField(
-        queryset=MultipleQuestions.objects.values('choices__vocab_meaning'),
+        queryset=MultipleQuestions.objects.none(),
         widget=forms.RadioSelect(),
         required=True,
         empty_label=None,
