@@ -23,12 +23,6 @@ class MultipleQuestions(models.Model):
     choices = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='choices')
     is_correct = models.BooleanField('Correct Answer', default=False)
 
-    def get_answers_list(self):
-        return [(answer.question_id, answer.choices_id) for answer in Question.objects.filter(quiz_id=self)]
-
-        # [(answer.id, answer.content) for answer in
-        #     self.order_answers(Answer.objects.filter(question=self))]
-
 
 class QuizTaker(models.Model):
     user = models.OneToOneField(UserManager, on_delete=models.PROTECT, primary_key=True)
@@ -38,10 +32,6 @@ class QuizTaker(models.Model):
         answered_questions = self.quiz_answers.filter(answer__question__quiz=quiz).values_list('answer__question__pk', flat=True)
         questions = quiz.questions.exclude(pk__in=answered_questions).order_by('answers')
         return questions
-
-    def get_questions(self, quiz):
-        multiple_choices = self.objects.filter(question__quiz_id=quiz.pk).values_list('choices__vocab_meaning', flat=True)
-        return multiple_choices
 
     def __str__(self):
         return self.user.username
