@@ -15,6 +15,8 @@ from django.views.generic import CreateView, ListView, UpdateView, FormView, Det
 from wordbook.models.quiz import Quiz, QuizTaker, CompletedQuiz, Question, MultipleQuestions
 from wordbook.models.wordbook import Wordbook, Word
 
+from django.views import View
+
 from django.core.exceptions import ValidationError
 
 from wordbook.forms import QuizTakeForm
@@ -128,15 +130,53 @@ class QuizDeleteView(DeleteView):
 
 @login_required
 def take_quiz(request, pk):
-    # quiz = get_object_or_404(Quiz, pk=pk)
-    # login_user = request.user.quiztaker
-    #
-    # if login_user.quizzes.filter(pk=pk).exists():
-    #     return render(request, 'wordbook/taken_quiz_list.html')
-    #
-    # form = QuizTakeForm(question=question, data=request.POST)
-    # form.save(commit=False)
+    quiz = get_object_or_404(Quiz, pk=pk)
+    login_user = request.user.quiztaker
 
-    return render(request, 'wordbook/take_quiz_form.html', quiz)
+    if login_user.quizzes.filter(pk=pk).exists():
+        return render(request, 'wordbook/taken_quiz_list.html')
 
+    total_questions = quiz.questions.count()
+    unanswered_questions = login_user.get_unanswered_questions(quiz)
+    total_unanswered_questions = unanswered_questions.count()
+    progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
+    question = unanswered_questions.first()
 
+    if request.method == 'POST':
+        form = QuizTakeForm(question=question, data=request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                user_answer = form.save(commit=False)
+                user_answer.taker = login_user
+                user_answer.save()
+                if login_user.get_unanswered_questions(quiz).exists():
+                    return redirect('wordbook:quiz_take', pk)
+                else:
+                    correct_answers = login_user.quiz_answers.filter(
+                        answer__question__quiz=quiz,
+                        answer__is_correct=True,
+                    ).count()
+                    score = round((correct_answers / total_questions) * 100.0, 2)
+                    CompletedQuiz.objects.create(user=login_user, quiz=quiz, score=score)
+                    if score < 50.0:
+                        messages.warning(
+                            request,
+                            'Better luck next time! Your score for the quiz %s was %s.'
+                            % (quiz, score),
+                        )
+                    else:
+                        messages.success(
+                            request,
+                            'Congratulations! You completed the quiz %s with success! You scored %s points.'
+                            % (quiz, score),
+                        )
+                    return redirect('wordbook:quiz_list')
+    else:
+        form = QuizTakeForm(question=question)
+
+    return render(request, 'wordbook/take_quiz_form.html', {
+        'quiz': quiz,
+        'question': question,
+        'form': form,
+        'progress': progress
+    })

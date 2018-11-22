@@ -11,6 +11,5 @@ urlpatterns = [
     path('home/completed_quiz_list/', quiz.CompletedQuizListView.as_view(), name='completed_quiz_list'),
     path('home/quiz_list/quiz_add/', quiz.QuizCreateView.as_view(), name='quiz_add'),
     path('home/quiz_list/game_delete/<int:pk>/', quiz.QuizDeleteView.as_view(), name='quiz_delete'),
-    # path(r'^home/game_list/(?P<slug>[\w-]+)/$', practicegame.PracticeGameDetailView.as_view(), name='game_detail'),
     path('home/quiz_list/quiz/<int:pk>/take/', quiz.take_quiz, name='quiz_take'),
 ]

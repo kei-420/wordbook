@@ -39,6 +39,10 @@ class QuizTaker(models.Model):
         questions = quiz.questions.exclude(pk__in=answered_questions).order_by('answers')
         return questions
 
+    def get_questions(self, quiz):
+        multiple_choices = self.objects.filter(question__quiz_id=quiz.pk).values_list('choices__vocab_meaning', flat=True)
+        return multiple_choices
+
     def __str__(self):
         return self.user.username
 
@@ -53,5 +57,6 @@ class CompletedQuiz(models.Model):
 class QuizTakerAnswer(models.Model):
     taker = models.ForeignKey(QuizTaker, on_delete=models.PROTECT, related_name='quiz_answers')
     answer = models.ForeignKey(MultipleQuestions, on_delete=models.PROTECT, related_name='+')
+
 
 

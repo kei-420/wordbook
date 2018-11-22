@@ -52,16 +52,36 @@ class WordAddForm(forms.ModelForm):
 #                                       choices=choices, widget=forms.RadioSelect)
 #
 
+# class QuizTakeForm(forms.ModelForm):
+#     class Meta:
+#         model = QuizTakerAnswer
+#         fields = ('answer',)
+#
+#     def __init__(self, *args, **kwargs):
+#         super(QuizTakeForm, self).__init__(*args, **kwargs)
+#         question = kwargs.pop('question')
+#         self.fields['answer'] = forms.ModelChoiceField(
+#             queryset=MultipleQuestions.objects.filter(question_id=question.pk),
+#             widget=forms.RadioSelect,
+#         )
+
+
 class QuizTakeForm(forms.ModelForm):
+    answer = forms.ModelChoiceField(
+        queryset=MultipleQuestions.objects.values('choices__vocab_meaning'),
+        widget=forms.RadioSelect(),
+        required=True,
+        empty_label=None,
+    )
+
     class Meta:
         model = QuizTakerAnswer
         fields = ('answer',)
 
     def __init__(self, *args, **kwargs):
-        super(QuizTakeForm, self).__init__(*args, **kwargs)
         question = kwargs.pop('question')
-        self.fields['answer'] = forms.ModelChoiceField(
-            queryset=MultipleQuestions.objects.filter(question_id=question.pk),
-            widget=forms.RadioSelect,
-        )
+        super(QuizTakeForm, self).__init__(*args, **kwargs)
+        self.fields['answer'].queryset = question.answers.order_by('choices')
+
+
 
