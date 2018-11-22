@@ -22,7 +22,6 @@ class Wordbook(models.Model):
 
     user = models.ForeignKey(UserManager, on_delete=models.PROTECT)
     word = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='answers')
-    # word_meaning = models.ForeignKey(WordMeanings, on_delete=models.PROTECT)
     adding_word = models.CharField(max_length=255)
     understanding_level = models.PositiveIntegerField(blank=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)

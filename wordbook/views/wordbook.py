@@ -22,12 +22,6 @@ class HomeView(LoginRequiredMixin, generic.ListView):
         page = self.request.GET.get('page')
 
         queryset = paginator.get_page(page)
-        # try:
-        # queryset = paginator.page(page)
-        # except PageNotAnInteger:
-        #     queryset = paginator.page(1)
-        # except EmptyPage:
-        #     queryset = paginator.page(paginator.num_pages)
         context = {
             'queryset': queryset,
         }

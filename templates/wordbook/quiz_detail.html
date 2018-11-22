@@ -5,28 +5,6 @@
 {% endblock %}
 
 {% block content %}
-{#{% load static %}#}
-{#    <!-- Add icon library -->#}
-{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">#}
-{##}
-{#    <link rel="stylesheet" type="text/css" media="all" href="{% static 'wordbook/home.css' %}">#}
-{#    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>#}
-{#    <!-- グローバルナビゲーション -->#}
-{#<nav class="navbar navbar-expand-lg navbar-dark bg-dark">#}
-{#  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">#}
-{#    <span class="navbar-toggler-icon"></span>#}
-{#  </button>#}
-{##}
-{#  <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
-{#      <h1>SELVOC</h1>#}
-{#      <h2 style="margin-left: 2%">Game Detail</h2>#}
-{#    <ul class="navbar-nav mr-auto">#}
-{#    </ul>#}
-{#      <a class="nav-link" href="{% url 'wordbook:home' %}">Home</a>#}
-{#      <a class="nav-link" href="{% url 'wordbook:game_list' %}">Practice</a>#}
-{#      <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>#}
-{#  </div>#}
-{#</nav>#}
 <h1>{{ practicegame.title }}</h1>
     {% if practicegame.single_attempt %}
         <h6>{% trans "You will only get one attempt at this quiz" %}.</h6>

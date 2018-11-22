@@ -1,8 +1,7 @@
-import random
 from django.db import models
 
 from accounts.models import UserManager
-from wordbook.models.wordbook import Wordbook, Word
+from wordbook.models.wordbook import Word
 
 
 class Quiz(models.Model):
