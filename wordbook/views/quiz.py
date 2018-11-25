@@ -197,5 +197,23 @@ def take_quiz(request, pk):
     })
 
 
+@method_decorator([login_required], name='dispatch')
+class CompletedQuizDetailView(DetailView):
+    model = CompletedQuiz
+
+    def get_queryset(self):
+        login_user = self.request.user.quiztaker
+        queryset = login_user.quiz_answers.filter(pk=login_user)
+        return queryset
+
+
+@method_decorator([login_required], name='dispatch')
+class CompletedQuizDeleteView(DeleteView):
+    model = CompletedQuiz
+    success_url = reverse_lazy('wordbook:completed_quiz_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
 # @method_decorator([login_required], name='dispatch')
 # class DetailedCompletedQuizView(DetailView):

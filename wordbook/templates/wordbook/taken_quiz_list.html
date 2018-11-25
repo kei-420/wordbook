@@ -28,17 +28,23 @@
     <table class="table mb-0">
       <thead>
         <tr>
-          <th>Quiz</th>
+          <th class="text-center">Quiz</th>
 {#          <th>Subject</th>#}
-          <th>Score</th>
+          <th class="text-center">Score</th>
+            <th class="text-center">Accumulated Average Score</th>
+          <th class="text-center"></th>
         </tr>
       </thead>
       <tbody>
         {% for completed_quiz in completed_quizzes %}
           <tr>
-            <td>{{ completed_quiz.quiz.name }}</td>
+            <td class="text-center">{{ completed_quiz.quiz.name }}</td>
 {#            <td>{{ taken_quiz.quiz.subject.get_html_badge }}</td>#}
-            <td>{{ completed_quiz.score }}/100</td>
+            <td class="text-center">{{ completed_quiz.score }}/100</td>
+              <td class="text-center"></td>
+            <td class="text-center"><a href="{% url 'wordbook:completed_quiz_delete' completed_quiz.pk %}"><button type="button" class="btn btn-primary remove-btn">
+      <i class="fa fa-minus" aria-hidden="true"></i>
+    </button></a></td>
           </tr>
         {% empty %}
           <tr>

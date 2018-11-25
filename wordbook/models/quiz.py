@@ -12,7 +12,7 @@ class QuizLength(models.Model):
 
 
 class Quiz(models.Model):
-    taker = models.ForeignKey(UserManager, on_delete=models.PROTECT, related_name='quizzes')
+    taker = models.ForeignKey(UserManager, on_delete=models.CASCADE, related_name='quizzes')
     name = models.CharField(max_length=255)
     length = models.ForeignKey(QuizLength, on_delete=models.PROTECT, related_name='quizzes')
 
@@ -22,7 +22,7 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
-    game_word = models.ForeignKey(Word, on_delete=models.PROTECT)
+    game_word = models.ForeignKey(Word, on_delete=models.CASCADE)
 
 
 class MultipleQuestions(models.Model):
@@ -37,7 +37,7 @@ class MultipleQuestions(models.Model):
 
 
 class QuizTaker(models.Model):
-    user = models.OneToOneField(UserManager, on_delete=models.PROTECT, primary_key=True)
+    user = models.OneToOneField(UserManager, on_delete=models.CASCADE, primary_key=True)
     quizzes = models.ManyToManyField(Quiz, through='CompletedQuiz')
 
     def get_unanswered_questions(self, quiz):
@@ -50,15 +50,15 @@ class QuizTaker(models.Model):
 
 
 class CompletedQuiz(models.Model):
-    user = models.ForeignKey(QuizTaker, on_delete=models.PROTECT, related_name='completed_quizzes')
-    quiz = models.ForeignKey(Quiz, on_delete=models.PROTECT, related_name='completed_quizzes')
+    user = models.ForeignKey(QuizTaker, on_delete=models.CASCADE, related_name='completed_quizzes')
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='completed_quizzes')
     score = models.FloatField()
     completed_at = models.DateTimeField(auto_now_add=True)
 
 
 class QuizTakerAnswer(models.Model):
-    taker = models.ForeignKey(QuizTaker, on_delete=models.PROTECT, related_name='quiz_answers')
-    answer = models.ForeignKey(MultipleQuestions, on_delete=models.PROTECT, related_name='+')
+    taker = models.ForeignKey(QuizTaker, on_delete=models.CASCADE, related_name='quiz_answers')
+    answer = models.ForeignKey(MultipleQuestions, on_delete=models.CASCADE, related_name='+')
 
 
 

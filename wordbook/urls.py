@@ -12,4 +12,5 @@ urlpatterns = [
     path('home/quiz_list/quiz_add/', quiz.QuizCreateView.as_view(), name='quiz_add'),
     path('home/quiz_list/game_delete/<int:pk>/', quiz.QuizDeleteView.as_view(), name='quiz_delete'),
     path('home/quiz_list/quiz/<int:pk>/take/', quiz.take_quiz, name='quiz_take'),
+    path('home/completed_quiz_list/<int:pk>/delete', quiz.CompletedQuizDeleteView.as_view(), name='completed_quiz_delete')
 ]

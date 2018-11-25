@@ -18,7 +18,13 @@ SELVOC/{{ quiz.name }}
   <div align="center">
     <form method="post" novalidate>
     {% csrf_token %}
-    {{ quiz_form.as_table }}
+    <ul>
+        {% for form in quiz_form %}
+            <li>
+            {{ form }}
+            </li>
+        {% endfor %}
+    </ul>
         {{ question_form.as_table }}
     <button type="submit" class="btn btn-primary">Next →</button>
     </form>
