@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, DeleteView
 
-from wordbook.models.quiz import Quiz, CompletedQuiz, Question, MultipleQuestions
+from wordbook.models.quiz import Quiz, CompletedQuiz, Question, MultipleQuestions, QuizTakerAnswer
 from wordbook.models.wordbook import Wordbook, Word
 from wordbook.forms import QuizTakeForm
 
@@ -44,7 +44,7 @@ class CompletedQuizListView(ListView):
 @method_decorator([login_required], name='dispatch')
 class QuizCreateView(CreateView):
     model = Quiz
-    fields = ('name',)
+    fields = ('name', 'length')
     template_name = 'wordbook/quiz_add_form.html'
 
     def form_valid(self, form):
@@ -53,14 +53,16 @@ class QuizCreateView(CreateView):
         quiz.save()
         if Wordbook.objects.filter(user_id=self.request.user.pk).count() < 5:
             messages.error(self.request, "Your wordbook owns less than 5 words. Add more to create a quiz.")
+            pass
         vocab_list = wordids_random_select(quiz.taker_id)
         for v in vocab_list:
             Question.objects.create(quiz_id=quiz.pk, game_word_id=v['word_id'])
         words_randomly_selected(quiz.pk)
         game_word_ids = Question.objects.filter(quiz_id=quiz.pk).values('game_word', 'pk')
         for gwi in game_word_ids:
-            if MultipleQuestions.objects.filter(choices=gwi['game_word']).filter(question=gwi['pk']).exists():
-                turn_to_true = MultipleQuestions.objects.filter(choices=gwi['game_word']).filter(question=gwi['pk']).first()
+            if MultipleQuestions.objects.filter(question=gwi['pk']).exists():
+                get_vocab_meaning = get_object_or_404(Word, pk=gwi['game_word'])
+                turn_to_true = MultipleQuestions.objects.filter(meaning=get_vocab_meaning.vocab_meaning).filter(question=gwi['pk']).first()
                 turn_to_true.is_correct = True
                 turn_to_true.save()
 
@@ -109,7 +111,8 @@ def words_randomly_selected(get_quiz_id):
     # combined_dictからMultipleChoicesテーブルへ保存
     for cd in combined_dict:
         for n in range(0, 4):
-            MultipleQuestions(question_id=cd, choices_id=combined_dict[cd][n]).save()
+            vocab = get_object_or_404(Word, pk=combined_dict[cd][n])
+            MultipleQuestions(meaning=vocab.vocab_meaning, question_id=cd).save()
 
 
 @method_decorator([login_required], name='dispatch')
@@ -134,12 +137,19 @@ def take_quiz(request, pk):
     total_unanswered_questions = unanswered_questions.count()
     progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
     question = unanswered_questions.first()
+    # question_list = quiz.questions.values_list('answers__choices__vocab_meaning', flat=True)
 
     if request.method == 'POST':
-        form = QuizTakeForm(question=question, data=request.POST)
-        if form.is_valid():
+        quiz_form = QuizTakeForm(question=question, data=request.POST)
+        # question_form = QuizShowForm(data=request.POST)
+        if quiz_form.is_valid():
             with transaction.atomic():
-                user_answer = form.save(commit=False)
+                user_answer = quiz_form.save(commit=False)
+                # user_answer.is_user_answer = True
+                # quiz_taker = QuizTakerAnswer()
+                # quiz_taker.taker = login_user
+                # quiz_taker.answer = user_answer
+                # quiz_taker.save()
                 user_answer.taker = login_user
                 user_answer.save()
                 if login_user.get_unanswered_questions(quiz).exists():
@@ -157,7 +167,7 @@ def take_quiz(request, pk):
                             'Do better next time! Your score for the quiz %s was %s/100'
                             % (quiz, score),
                         )
-                    elif 50 < score < 80:
+                    elif 50 <= score < 80:
                         messages.warning(
                             request,
                             'Better luck next time! Your score for the quiz %s was %s/100.'
@@ -171,11 +181,15 @@ def take_quiz(request, pk):
                         )
                     return redirect('wordbook:quiz_list')
     else:
-        form = QuizTakeForm(question=question)
+        quiz_form = QuizTakeForm(question=question)
+        # question_form = QuizShowForm()
 
     return render(request, 'wordbook/take_quiz_form.html', {
         'quiz': quiz,
         'question': question,
-        'form': form,
-        'progress': progress
+        'quiz_form': quiz_form,
+        'progress': progress,
+
     })
+
+

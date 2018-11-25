@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+from django.views.generic import ListView, FormView, DeleteView
 from django.urls import reverse_lazy
 
 from wordbook.forms import WordAddForm
@@ -9,8 +11,13 @@ from wordbook.models.wordbook import Wordbook
 
 from django.core.paginator import Paginator
 
+from django.contrib import messages
 
-class HomeView(LoginRequiredMixin, generic.ListView):
+from bootstrap_modal_forms.mixins import PassRequestMixin
+
+
+@method_decorator([login_required], name='dispatch')
+class HomeView(ListView):
     model = Wordbook
     paginate_by = 12
     template_name = 'wordbook/home.html'
@@ -28,9 +35,11 @@ class HomeView(LoginRequiredMixin, generic.ListView):
         return render(request, 'wordbook/home.html', context)
 
 
-class WordAddView(LoginRequiredMixin, generic.FormView):
+@method_decorator([login_required], name='dispatch')
+class WordAddView(FormView):
     form_class = WordAddForm
     template_name = 'wordbook/word_add.html'
+    success_url = reverse_lazy('wordbook:home')
 
     def get_form_kwargs(self):
         kwargs = super(WordAddView, self).get_form_kwargs()
@@ -42,11 +51,12 @@ class WordAddView(LoginRequiredMixin, generic.FormView):
         if not form.is_valid():
             return render(request, 'wordbook/word_add.html', {'form': form})
         form.save(commit=True)
-
+        messages.success(request, "'%s' has been just added" % form.cleaned_data['adding_word'])
         return redirect('wordbook:home')
 
 
-class WordDeleteView(generic.DeleteView):
+@method_decorator([login_required], name='dispatch')
+class WordDeleteView(DeleteView):
     model = Wordbook
     success_url = reverse_lazy('wordbook:home')
 

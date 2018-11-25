@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% load crispy_forms_tags %}
-
+{% block meta_title %}
+SELVOC/{{ quiz.name }}
+{% endblock %}
 {% block content %}
 {% load static %}
     <!-- Add icon library -->
@@ -16,7 +18,8 @@
   <div align="center">
     <form method="post" novalidate>
     {% csrf_token %}
-    {{ form.as_table }}
+    {{ quiz_form.as_table }}
+        {{ question_form.as_table }}
     <button type="submit" class="btn btn-primary">Next →</button>
     </form>
   </div>

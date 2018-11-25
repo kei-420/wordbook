@@ -1,7 +1,7 @@
 from django import forms
 
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.quiz import  MultipleQuestions, QuizTakerAnswer
+from wordbook.models.quiz import MultipleQuestions, QuizTakerAnswer, Quiz
 
 
 class WordAddForm(forms.ModelForm):
@@ -33,22 +33,35 @@ class WordAddForm(forms.ModelForm):
         return word_info
 
 
+# class QuizCreateForm(forms.ModelForm):
+#
+#     class Meta:
+#         model = Quiz
+#         fields = ('name', 'length', )
+#
+#     def __init__(self, *args, **kwargs):
+#         super(QuizCreateForm, self).__init__(*args, **kwargs)
+#         self.fields['name'].widget.attrs = {'placeholder': 'タイトル'}
+#         self.fields['length'] = forms.ChoiceField(choices={5, 10, 15}, widget=forms.Select(), label='問題数を選んでください。')
+
+
 class QuizTakeForm(forms.ModelForm):
     answer = forms.ModelChoiceField(
         queryset=MultipleQuestions.objects.none(),
-        widget=forms.RadioSelect(),
+        widget=forms.RadioSelect,
         required=True,
         empty_label=None,
     )
 
     class Meta:
         model = QuizTakerAnswer
-        fields = ('answer',)
+        fields = ('answer', )
 
     def __init__(self, *args, **kwargs):
         question = kwargs.pop('question')
         super(QuizTakeForm, self).__init__(*args, **kwargs)
-        self.fields['answer'].queryset = question.answers.order_by('choices')
+        self.fields['answer'].queryset = question.answers.order_by('meaning')
+
 
 
 

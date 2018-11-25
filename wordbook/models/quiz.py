@@ -4,12 +4,26 @@ from accounts.models import UserManager
 from wordbook.models.wordbook import Word
 
 
+class QuizLength(models.Model):
+    length = models.IntegerField()
+
+    def __int__(self):
+        return int(self.length)
+
+    def __str__(self):
+        return str(self.length)
+
+
 class Quiz(models.Model):
     taker = models.ForeignKey(UserManager, on_delete=models.PROTECT, related_name='quizzes')
     name = models.CharField(max_length=255)
+    length = models.ForeignKey(QuizLength, on_delete=models.PROTECT, related_name='quizzes')
 
     def __str__(self):
-        return self.name
+        return self.name, str(self.length)
+
+    def __int__(self):
+        return int(self.length)
 
 
 class Question(models.Model):
@@ -19,8 +33,13 @@ class Question(models.Model):
 
 class MultipleQuestions(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-    choices = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='choices')
+    # choices = models.ForeignKey(Word, on_delete=models.PROTECT, related_name='choices')
+    meaning = models.CharField('Answer', max_length=255)
     is_correct = models.BooleanField('Correct Answer', default=False)
+    # is_user_choice = models.BooleanField('User Choice', default=False)
+
+    def __str__(self):
+        return self.meaning
 
 
 class QuizTaker(models.Model):
