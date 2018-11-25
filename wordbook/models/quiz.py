@@ -7,9 +7,6 @@ from wordbook.models.wordbook import Word
 class QuizLength(models.Model):
     length = models.IntegerField()
 
-    def __int__(self):
-        return int(self.length)
-
     def __str__(self):
         return str(self.length)
 
@@ -20,10 +17,7 @@ class Quiz(models.Model):
     length = models.ForeignKey(QuizLength, on_delete=models.PROTECT, related_name='quizzes')
 
     def __str__(self):
-        return self.name, str(self.length)
-
-    def __int__(self):
-        return int(self.length)
+        return self.name
 
 
 class Question(models.Model):

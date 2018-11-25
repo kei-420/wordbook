@@ -9,9 +9,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, DeleteView
+from django.views.generic import CreateView, ListView, DeleteView, DetailView
 
-from wordbook.models.quiz import Quiz, CompletedQuiz, Question, MultipleQuestions, QuizTakerAnswer
+from wordbook.models.quiz import Quiz, CompletedQuiz, Question, MultipleQuestions, QuizTakerAnswer, QuizLength
 from wordbook.models.wordbook import Wordbook, Word
 from wordbook.forms import QuizTakeForm
 
@@ -51,13 +51,17 @@ class QuizCreateView(CreateView):
         quiz = form.save(commit=False)
         quiz.taker_id = self.request.user.pk
         quiz.save()
-        if Wordbook.objects.filter(user_id=self.request.user.pk).count() < 5:
-            messages.error(self.request, "Your wordbook owns less than 5 words. Add more to create a quiz.")
-            pass
-        vocab_list = wordids_random_select(quiz.taker_id)
+        quiz_length = get_object_or_404(QuizLength, pk=quiz.length_id)
+        if Wordbook.objects.filter(user_id=self.request.user.pk).count() < quiz_length.length:
+            messages.error(
+                self.request,
+                "Your wordbook owns less than %s words. Add more to create a quiz." % str(quiz_length.length)
+            )
+
+        vocab_list = wordids_random_select(quiz.taker_id, quiz_length.length)
         for v in vocab_list:
             Question.objects.create(quiz_id=quiz.pk, game_word_id=v['word_id'])
-        words_randomly_selected(quiz.pk)
+        words_randomly_selected(quiz.pk, quiz_length.length)
         game_word_ids = Question.objects.filter(quiz_id=quiz.pk).values('game_word', 'pk')
         for gwi in game_word_ids:
             if MultipleQuestions.objects.filter(question=gwi['pk']).exists():
@@ -70,15 +74,15 @@ class QuizCreateView(CreateView):
         return redirect('wordbook:quiz_list')
 
 
-def wordids_random_select(user_id):
-    randomly_selected = np.random.choice(list(Wordbook.objects.filter(user_id=user_id).values('word_id')), 5, replace=False)
+def wordids_random_select(user_id, quiz_length):
+    randomly_selected = np.random.choice(list(Wordbook.objects.filter(user_id=user_id).values('word_id')), quiz_length, replace=False)
     vocab_list = []
     for r in randomly_selected:
         vocab_list.append(r)
     return vocab_list
 
 
-def words_randomly_selected(get_quiz_id):
+def words_randomly_selected(get_quiz_id, quiz_length):
     game_wordids = Question.objects.filter(quiz_id=get_quiz_id).values('game_word', 'pk')
     q_id_list = []
     for q_id in game_wordids:
@@ -86,7 +90,7 @@ def words_randomly_selected(get_quiz_id):
         q_id_list.append(random_choices)
 
     list_for_multiple_choices = []
-    for n in range(0, 5):
+    for n in range(0, quiz_length):
         for l in q_id_list[n]:
             list_for_multiple_choices.append(l['pk'])
 
@@ -95,7 +99,7 @@ def words_randomly_selected(get_quiz_id):
     for l in [list_for_multiple_choices[i:i + group_by] for i in range(0, len(list_for_multiple_choices), group_by)]:
         list_divided_by_3.append(l)
 
-    for n in range(0, 5):
+    for n in range(0, quiz_length):
         list_divided_by_3[n][0:0] = [game_wordids[n]['game_word']]
 
     for ldb3 in list_divided_by_3:
@@ -193,3 +197,5 @@ def take_quiz(request, pk):
     })
 
 
+# @method_decorator([login_required], name='dispatch')
+# class DetailedCompletedQuizView(DetailView):
