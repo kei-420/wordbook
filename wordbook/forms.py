@@ -1,7 +1,7 @@
 from django import forms
 
 from wordbook.models.wordbook import Wordbook, Word
-from wordbook.models.quiz import MultipleQuestions, QuizTakerAnswer, Quiz
+from wordbook.models.quiz import MultipleQuestions, QuizTakerAnswer
 
 
 class WordAddForm(forms.ModelForm):
